@@ -6,4 +6,9 @@ dist
 # Ignore the output video from Git but not videos you import into src/.
 out
 
-skills
+# Archive task materials and local skills, but never credentials.
+.env.*
+!.env.example
+
+# The original FFmpeg archive is committed; unpacked tools are reproducible.
+.temp/tools/ffmpeg-unpacked/
