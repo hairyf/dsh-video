@@ -4,15 +4,15 @@
 
 ## 当前交付状态
 
-最新 v11 落实两处交互与片尾改动：安装完成并点击完成后回到主会话；片头“标注修改”停住时显示两处暂存标注、修改摘要与待修改输入框，标注项本身不再加边框。片尾宠物换成 87 帧“跳舞(Helltaker)”循环。其余分镜、七张“编号 · 功能名”中转卡、32% 配乐／1.35 音效增益、连续用户原曲与 43＋4 署名保留：从 React 源界面以两倍像素密度渲染 **3840×2160、30 fps、175 秒、5250 帧**。代码／时间轴检查与最终媒体验证全部通过；v11 成片已导出，待用户审片。内置绘图工具已生成封面，标题及包含相关官方链接的中文简介已整理。八段原片重导了受界面改动影响的 revise，并重新打包 v11 原片包。历史成片保留。
+最新 v11 落实两处交互与片尾改动：安装完成并点击完成后回到主会话；片头“标注修改”停住时显示两处暂存标注、修改摘要与待修改输入框，标注项本身不再加边框。片尾宠物换成 87 帧“跳舞(Helltaker)”循环；宠物气泡与其反向缩放，屏幕字号、位置与开头一致，正文里收窄换行以免遮挡右侧窗口。其余分镜、七张“编号 · 功能名”中转卡、32% 配乐／1.35 音效增益、连续用户原曲与 43＋4 署名保留：从 React 源界面以两倍像素密度渲染 **3840×2160、30 fps、175 秒、5250 帧**。代码／时间轴检查与最终媒体验证全部通过；v11 成片已导出，待用户审片。内置绘图工具已生成封面，标题及包含相关官方链接的中文简介已整理。八段原片重导了受界面改动影响的 revise，并重新打包 v11 原片包。历史成片保留。
 
-- [v11 4K 成片](<out/film-simulated-v11-4k.mp4>)：H.264/yuv420p，AAC 立体声，PNG 无损中间帧、CRF 14、slow；255,052,548 字节，SHA-256 `0dc8b3dc833c32e011911cef5f6466c2ac6027bee840503900d96ae020d80ffa`。
+- [v11 4K 成片](<out/film-simulated-v11-4k.mp4>)：H.264/yuv420p，AAC 立体声，PNG 无损中间帧、CRF 14、slow；251,836,385 字节，SHA-256 `9df1af177c64e9ad90d6b701b8bc421113bd572417c7c43b836c49664c971ec7`。
 - [v11 最终检查报告](<out/simulation-verification-v11-4k.json>)：九段完整解码、原曲连续性、立体声峰值／淡出及第 5249 帧全黑检查全部通过。
 - [内置绘图工具生成的封面](<out/dsh-tauri-cover-v1.png>)：1672×941 PNG，1,667,408 字节；SHA-256 `e1cb18b976bf0d41915523a663991a87e100ea9855e12939bae60bf66afad0f5`。没有使用 imagine CLI 生成。
 - [发布标题与中文简介](<out/dsh-tauri-publication.md>)：标题为“【DSH Tauri】更新！Office 套件、优化工具、新宠物！”；简介按第一期风格精简，保留 DSH Tauri 项目、下载、使用文档及两个插件的官方链接。链接核验日期为 2026-10-24；仅准备文案，未发布。
 - [v11 检查帧](<out/simulated-keys-v11-4k/>)：24 张 3840×2160 PNG，覆盖安装回到主会话、片头标注摘要与输入框、片尾舞蹈宠物及七张中转卡。
 - 已验证的 [v9 4K 成片](<out/film-simulated-v9-4k.mp4>)／[报告](<out/simulation-verification-v9-4k.json>) 与 [v10 4K 成片](<out/film-simulated-v10-4k.mp4>)／[报告](<out/simulation-verification-v10-4k.json>) 保留：v9 为 252,381,527 字节，SHA-256 `642c4ae06e796782ff367069fc59b6fb60d999e9cfb2371a0a44f66d2cbccb0e`；v10 为 253,359,009 字节，SHA-256 `c4b4d757dfa58075e8a1e72c1963af0db11f1234566547ffab935521b0dd7c52`。
-- [v11 八段连续模拟原片包](<out/dsh-simulated-originals-v11.zip>)，附 [原片说明](<out/simulated-originals/README.md>)：install 改为完成后回到主会话，revise 保留无边框标注与修改摘要；1400×900、30 fps、连续原速、无音轨，无后期光标、运镜或影片转场。包内恰含说明及八段 MP4，均与本地原片逐字节相同；3,584,000 字节，SHA-256：`3233cc4c297c1bf0bd61732c513c1c26d31f997d11792b69103479221bb7f64f`。
+- [v11 八段连续模拟原片包](<out/dsh-simulated-originals-v11.zip>)，附 [原片说明](<out/simulated-originals/README.md>)：install 改为完成后回到主会话，revise 保留无边框标注与修改摘要；1400×900、30 fps、连续原速、无音轨，无后期光标、运镜或影片转场。包内恰含说明及八段 MP4，均与本地原片逐字节相同；3,584,000 字节，SHA-256：`d8f7e27b68473dada8f25cca6fb009e6baacfa0d1208f85d2916556b7a825047`。
 - [v9 八段原片包](<out/dsh-simulated-originals-v9.zip>) 保留（3,179,162 字节，SHA-256 `c83114d758fe017012878bddf3aa4c62d7fbfa2d9d0ff062c25b7a4c39a6b843`）。
 - 已验证的历史 [v8 4K 成片](<out/film-simulated-v8-4k.mp4>) 与 [v8 检查报告](<out/simulation-verification-v8-4k.json>) 保留。v8 为 275,331,467 字节，SHA-256：`1da7274c1c72204384b7324863bd2ac4d6037ce8f79c3d4b5a5484af442c7f82`。
 - [v7 4K 成片](<out/film-simulated-v7-4k.mp4>)、[v7 检查报告](<out/simulation-verification-v7-4k.json>)、[v6 成片](<out/film-simulated-v6.mp4>) 及 [v6 原片包](<out/dsh-simulated-originals-v6.zip>) 保留；`out/` 被 Git 忽略。

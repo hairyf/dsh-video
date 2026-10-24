@@ -759,6 +759,8 @@ const Pet: FC = () => {
   const lastCue = [...PET_CUES].reverse().find((c) => frame >= c.at);
   const hop = lastCue ? interpolate(frame, [lastCue.at, lastCue.at + 6, lastCue.at + 14], [0, -26, 0], clamp) : 0;
   const bob = Math.sin(frame / 22) * 6;
+  // 宠物整体缩放从 1 收至 0.54；气泡用 1 / s 反向缩放，屏幕上的字号和宽度始终与开头一致。
+  const s = (1 - 0.46 * move) * interpolate(frame, [B.pet, B.pet + 8], [0.6, 1], { ...clamp, easing: Easing.out(Easing.back(2)) });
   return (
     <div
       style={{
@@ -770,9 +772,7 @@ const Pet: FC = () => {
         zIndex: 30,
         transformOrigin: "0 0",
         translate: `${680 + (40 - 680) * move}px ${230 + (770 - 230) * move + bob + hop}px`,
-        scale:
-          (1 - 0.46 * move) *
-          interpolate(frame, [B.pet, B.pet + 8], [0.6, 1], { ...clamp, easing: Easing.out(Easing.back(2)) }),
+        scale: s,
       }}
     >
       {PET_CUES.map((cue, i) => (
@@ -793,31 +793,31 @@ const Pet: FC = () => {
         </Sequence>
       ))}
       {bubble ? (
-        <div
-          className="film-pet-bubble"
-          style={{
-            position: "absolute",
-            // 气泡始终在宠物右上方：大宠物起点略偏右，正文小宠物放到头顶上方，向右展开。
-            left: bubble.side ? 470 : 390,
-            top: bubble.side ? 40 : -180,
-            padding: "22px 30px",
-            borderRadius: 28,
-            border: "none",
-            outline: "none",
-            background: "#fff",
-            color: INK,
-            fontFamily: SANS,
-            fontWeight: 700,
-            fontSize: bubble.side ? 46 : 56,
-            lineHeight: 1.45,
-            whiteSpace: "nowrap",
-            boxShadow: "0 18px 50px rgba(15,23,42,.14)",
-            opacity: interpolate(frame, [bubble.until - 15, bubble.until], [1, 0], clamp),
-          }}
-        >
-          {bubble.lines.map((l) => (
-            <div key={l.t}>{typed(l.t, l.at)}</div>
-          ))}
+        <div style={{ position: "absolute", left: 470, top: 40, scale: String(1 / s), transformOrigin: "0 0" }}>
+          <div
+            className="film-pet-bubble"
+            style={{
+              // 与大宠物开头同一位置、同一字号；正文里收窄宽度，避免压到右侧窗口。
+              padding: "22px 30px",
+              borderRadius: 28,
+              border: "none",
+              outline: "none",
+              background: "#fff",
+              color: INK,
+              fontFamily: SANS,
+              fontWeight: 700,
+              fontSize: 46,
+              lineHeight: 1.45,
+              maxWidth: 460 - 160 * move,
+              whiteSpace: "normal",
+              boxShadow: "0 18px 50px rgba(15,23,42,.14)",
+              opacity: interpolate(frame, [bubble.until - 15, bubble.until], [1, 0], clamp),
+            }}
+          >
+            {bubble.lines.map((l) => (
+              <div key={l.t}>{typed(l.t, l.at)}</div>
+            ))}
+          </div>
         </div>
       ) : null}
     </div>
