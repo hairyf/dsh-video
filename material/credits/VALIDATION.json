@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "validated_on": "2026-10-24",
+  "api_fields_exact_match": 45,
+  "unique_account_ids": 45,
+  "anonymous_records_exact_match": 5,
+  "counts": {"total_api_records":50,"public_accounts":45,"type_user":44,"type_bot":1,"type_anonymous":5},
+  "readme_svg_users_matched": 44,
+  "readme_users_missing": 0,
+  "avatars": {"count":45,"jpeg":26,"png":19,"nonempty":45,"http_success":45,"mime_and_codec_valid":45,"positive_dimensions":45,"full_ffmpeg_decode_pass":45,"sha256_match":45,"total_bytes":782350,"min_side":100,"max_side":420},
+  "updates": {"groups":3,"items":12,"all_commit_sources_in_release_and_compare":true,"comparison_commit_count":39,"all_release_note_commit_links_in_compare":32},
+  "commands_passed": ["node material/credits/verify-credits.mjs --decode","node C:/Users/hairy/AppData/Local/Temp/dsh-credits-final-check-20261024.mjs"],
+  "runtime_scope": "Avatar files decoded locally; feature claims verified against official release and tag comparison, not runtime retested across Linux/iOS/Android.",
+  "operations": "No src edits, no dependency changes, no browser/TaskSpace operations, no commit/push/publish."
+}

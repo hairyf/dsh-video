@@ -1,0 +1,54 @@
+{
+  "version": "v0.25.0",
+  "repository": "dsh-tauri/deepseek-harness-desktop",
+  "published_at": "2026-10-22T09:39:56Z",
+  "draft": false,
+  "prerelease": false,
+  "tag_commit": "915a21f67279ec360d9b0fe4a78d279e7e712964",
+  "base_version": "v0.24.5",
+  "base_commit": "e73c747b2a0bf3a0739212900c8b890149e442dc",
+  "release_url": "https://github.com/dsh-tauri/deepseek-harness-desktop/releases/tag/v0.25.0",
+  "compare_url": "https://github.com/dsh-tauri/deepseek-harness-desktop/compare/v0.24.5...v0.25.0",
+  "verification": "Official release is published, not a draft or prerelease. Compare returns 39 commits; every one of the 32 commit links in release notes belongs to this range. Main-only changes excluded. The v0.24.5 main-window-hide fix is excluded.",
+  "editorial_note": "Twelve selected other updates, not an exhaustive changelog. The new-window fullscreen action and DSH OPS preset are deliberately omitted because the main film already demonstrates them.",
+  "groups": [
+    {
+      "title": "桌面与会话",
+      "items": [
+        {"text":"聊天跟随滚动更流畅","detail":"修复 WKWebView 中聊天跟随滚动卡顿，并按滚动容器聚合跟随状态。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/41863d87","https://github.com/dsh-tauri/deepseek-harness-desktop/commit/b595dc4f"]},
+        {"text":"子窗口标识更清楚","detail":"非主窗口在帮助右侧新增「子窗口」Chip。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/7ddf7920"]},
+        {"text":"多窗口档案互不顶替","detail":"额外窗口切换档案不再覆盖主窗口的启动档案；不是宣称所有窗口状态都隔离。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/4f356ddc"]},
+        {"text":"归档清理通知与桌宠","detail":"会话归档时静默移除通知与对应 Pet 状态；不是删除桌宠素材。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/e049a59b"]}
+      ]
+    },
+    {
+      "title": "移动与远程",
+      "items": [
+        {"text":"Android 平板支持旋转","detail":"Android 平板允许旋转，手机继续保持竖屏。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/0a3236ad"]},
+        {"text":"扫码页可手填地址","detail":"移动原生端扫描页新增手动地址输入。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/7180e70a"]},
+        {"text":"iOS 键盘不再挡输入","detail":"保持输入框位于 iOS 键盘上方，并修复 iPad 按退格后输入框落到键盘后方。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/28097c37","https://github.com/dsh-tauri/deepseek-harness-desktop/commit/573cbfda"]},
+        {"text":"配对页兼容无参链接","detail":"没有 ?auth= 参数的链接也能正常使用配对表单；不代表移除认证或无需配对凭据。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/e7fbb242"]}
+      ]
+    },
+    {
+      "title": "生态与兼容",
+      "items": [
+        {"text":"插件改写保留表达式","detail":"桌面端改写 cordis.patch.yml 时保留 !!js 表达式。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/fa12e97c"]},
+        {"text":"MCP 编辑保留配置","detail":"编辑或复制 MCP 服务时保留 !!js 值及隐藏字段。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/bbeba1c5"]},
+        {"text":"Linux 支持粘贴文件","detail":"Linux 桌面对话支持剪贴板文件粘贴，兼容 deepin/DFM 的 CRLF uri-list。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/249a6df7","https://github.com/dsh-tauri/deepseek-harness-desktop/commit/16aaa70a"]},
+        {"text":"Linux 语音输入修复","detail":"修复 Linux 语音输入涉及的权限、GStreamer 及录音编码问题。该结论是官方变更事实，未在本机重新跑 Linux 运行时。","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/commit/eef482cc","https://github.com/dsh-tauri/deepseek-harness-desktop/pull/1171"]}
+      ]
+    }
+  ],
+  "attribution": {
+    "product_development_display": "Hairy",
+    "video_production_display": "AI",
+    "confirmation": "Parent agent reported direct user confirmation on 2026-10-24; not inferred from current gh authentication or host username.",
+    "public_facts": [
+      {"fact":"GitHub public profile hairyf has display name Hairy.","source":"https://api.github.com/users/hairyf"},
+      {"fact":"Repository README has a developer badge whose alt text is hairyf | Trendshift.","source":"https://github.com/dsh-tauri/deepseek-harness-desktop/blob/v0.25.0/README.md#L38"},
+      {"fact":"Cargo package authors and LICENSE credit deepseek-harness-desktop contributors collectively, not one sole author.","sources":["https://github.com/dsh-tauri/deepseek-harness-desktop/blob/v0.25.0/src-tauri/Cargo.toml#L5","https://github.com/dsh-tauri/deepseek-harness-desktop/blob/v0.25.0/LICENSE#L3"]}
+    ],
+    "boundary":"Hairy is a publicly supported attribution candidate and the user-confirmed display credit; public repository data alone does not verify the identity of the logged-in user or sole authorship. Anonymous API names are commit-author display names, not verified legal names."
+  }
+}

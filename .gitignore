@@ -12,3 +12,7 @@ out
 
 # The original FFmpeg archive is committed; unpacked tools are reproducible.
 .temp/tools/ffmpeg-unpacked/
+# Chrome noise written by remotion render
+debug.log
+# Isolated recording environment, credentials, and continuous originals.
+.temp/recording-20261024/

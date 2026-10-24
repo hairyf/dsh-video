@@ -1,0 +1,3076 @@
+[assistant • todo_write]
+{"todos":[{"content":"验证隔离的 DSH CLI 与原生桌面录制环境","status":"in_progress"},{"content":"录制插件安装、四类办公文件、标注修改、新窗口和 Ops","status":"pending"},{"content":"处理连续录屏并接入现有影片","status":"pending"},{"content":"渲染验证成片，更新交接并交付","status":"pending"}]}
+
+[assistant • search_context]
+{"query":"DSH_E2E_HOME","limit":5}
+
+[assistant • search_context]
+{"query":"ego-browser","limit":5}
+
+[assistant • ops_read_files]
+{"files":[{"path":"../deepseek-harness-desktop/src-tauri/src/config/setting.rs","offset":215,"limit":85},{"path":"../deepseek-harness-desktop/test/e2e/support/desktop.ts","offset":1,"limit":270},{"path":"package.json","offset":1,"limit":150},{"path":".gitignore","offset":1,"limit":150},{"path":"../deepseek-harness-desktop/AGENTS.md","offset":1,"limit":160}]}
+
+[assistant • ops_bash]
+{"command":"rg --files .temp/recording-20261024 ../deepseek-harness-desktop/vendor ../deepseek-harness-desktop/.local -g '!node_modules' -g '!target' -g '!*.lock' -g '!*.log'","description":"Inspect existing isolated recording preparation files"}
+
+[tool • todo_write]
+Updated todo list: 3 pending, 1 in progress, 0 completed.
+
+[tool • search_context]
+Found 2 block(s) for "DSH_E2E_HOME":
+
+b11 (T1) "Native desktop isolation discovery and visual inspection" [m00693–m00709 · 17 msgs]
+  ... ides; E2E testing supports separate Store/WebView; config setting currently uses【DSH_E2E_HOME】 for appdata root. Real preset install UI in shell so must use native app, not fake browser shell.
+Open obje ...
+
+b12 (T1) "Desktop test launch artifacts and runtime availability" [m00710–m00728 · 19 msgs]
+  ... HOME=<scratch>/home,APPDATA/Roaming,LOCALAPPDATA/Local,DSH_HOME=<home>/.dsh.dev,【DSH_E2E_HOME】=<scratch>,DSH_DOWNLOAD_CACHE_DIR,DSH_E2E_WEBVIEW_DATA_DIR,PNPM_HOME/COREPACK_HOME,npm config/cache. Builds  ...
+
+[tool • search_context]
+Found 2 block(s) for "ego-browser":
+
+b11 (T1) "Native desktop isolation discovery and visual inspection" [m00693–m00709 · 17 msgs]
+  TASK AS OF THIS BLOCK (history): Assistant told user using 【ego-browser】/Tauri/Remotion skills, light theme by default, actual runtime version for title, omit unverified Ops multipliers, correct25s titl ...
+
+b10 (T1) "Loaded video/browser skills and reread handoff" [m00680–m00692 · 13 msgs]
+  ... old-script hazards). Located only ../deepseek-harness-desktop/AGENTS.md. Loaded 【ego-browser】, tauri, remotion-best-practices. Paths E:/projects/dsh-video/.agents/skills/ego-browser/SKILL.md, C:/Users/h ...
+
+[tool • ops_read_files]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\src-tauri\\src\\config\\setting.rs" (Lines 215-299 of 1008) ===
+215|            auto_start: true,
+216|            auto_update: default_auto_update(),
+217|            language: "zh-CN".to_string(),
+218|            dsh_pkg_commit: None,
+219|            dsh_pkg_tag: None,
+220|            cli_link_enabled: default_cli_link_enabled(),
+221|            preinstall_done: false,
+222|            preset_hash: None,
+223|            active_profile: default_active_profile(),
+224|            desktop_profile_ready: false,
+225|            active_core: None,
+226|            manual_port: None,
+227|            zoom_factor: default_zoom_factor(),
+228|            close_action: default_close_action(),
+229|            backup_retention_count: default_backup_retention_count(),
+230|            backup_include_credentials: false,
+231|            pet_enabled: false,
+232|            active_pet: None,
+233|            pet_size: None,
+234|            throw_enabled: false,
+235|            force_xwayland: false,
+236|            local_plugin_hmr: default_local_plugin_hmr(),
+237|        }
+238|    }
+239|}
+240|
+241|/// 当前是否为 E2E 运行（内嵌 WebDriver server 被请求）。
+242|pub fn is_e2e_run() -> bool {
+243|    std::env::var_os(E2E_PORT_ENV_VAR).is_some_and(|v| !v.is_empty())
+244|}
+245|
+246|pub(crate) fn e2e_app_data_dir() -> Result<Option<std::path::PathBuf>, String> {
+247|    resolve_e2e_app_data_dir(is_e2e_run(), std::env::var_os("DSH_E2E_HOME").as_deref())
+248|}
+249|
+250|fn resolve_e2e_app_data_dir(
+251|    e2e: bool,
+252|    home: Option<&std::ffi::OsStr>,
+253|) -> Result<Option<std::path::PathBuf>, String> {
+254|    if !e2e {
+255|        return Ok(None);
+256|    }
+257|    let home = home
+258|        .map(std::path::Path::new)
+259|        .filter(|home| home.is_absolute())
+260|        .ok_or_else(|| {
+261|            "STARTUP_E2E_HOME_INVALID: DSH_E2E_HOME must be a non-empty absolute path".to_string()
+262|        })?;
+263|    Ok(Some(home.join("app-data")))
+264|}
+265|
+266|/// 当前进程应使用的 Store 持久化文件名（生产 / 开发 / E2E 三方隔离的唯一真值）。
+267|///
+268|/// store（端口、installed、active_core、窗口几何等）属于「应用数据」而非共用核心：
+269|/// 生产默认 3080、开发默认 3081，共用一份 store 会让两边端口一路漂移并相互污染状态；
+270|/// E2E 若复用开发文件，用例写入的窗口几何会覆盖用户正在使用的开发版配置。
+271|pub fn store_dat_file_name() -> &'static str {
+272|    resolve_store_dat_file(is_e2e_run(), cfg!(debug_assertions))
+273|}
+274|
+275|/// `store_dat_file_name` 的纯函数内核：把「是否 E2E」「是否 debug」映射到文件名。
+276|fn resolve_store_dat_file(e2e: bool, debug: bool) -> &'static str {
+277|    if e2e {
+278|        STORE_DAT_TEST_FILE
+279|    } else if debug {
+280|        STORE_DAT_DEV_FILE
+281|    } else {
+282|        STORE_DAT_FILE
+283|    }
+284|}
+285|
+286|/// 启动最早期读取 `force_xwayland`，绕过 `tauri_plugin_store` 直接解析 store 文件。
+287|///
+288|/// `GDK_BACKEND` 必须在 GTK 初始化之前设置，那时 `AppHandle` 尚不存在，插件的
+289|/// `StoreExt` 用不了。路径由 `logger::identifier_dir()` 与 `store_dat_file_name()` 拼出，
+290|/// 与插件的 `BaseDirectory::AppData` + 文件名解析一致，开发 / E2E / 生产三份 store
+291|/// 不互读。store 靠文件名区分 dev，目录不带 `dev/` 一层，与日志的做法不同。
+292|/// 文件缺失、JSON 非法、键缺失一律按关闭处理：此处早于 `logger::init()`，
+293|/// 无处告警，静默回落到默认行为比中断启动合适。
+294|pub fn force_xwayland_setting() -> bool {
+295|    crate::logger::identifier_dir()
+296|        .map(|dir| dir.join(store_dat_file_name()))
+297|        .and_then(|path| std::fs::read_to_string(path).ok())
+298|        .is_some_and(|raw| force_xwayland_in_store_json(&raw))
+299|}
+[revision=e33ffa5103ce31f8680ee2f85ce3f8db76b7acc1ecd2a35227373944bf8740e6; more lines; nextOffset=300]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\test\\e2e\\support\\desktop.ts" (Lines 1-270 of 400) ===
+1|import type { Buffer } from 'node:buffer'
+2|import { spawn } from 'node:child_process'
+3|import { existsSync } from 'node:fs'
+4|import { mkdir, mkdtemp, realpath, rm } from 'node:fs/promises'
+5|import { createConnection } from 'node:net'
+6|import { tmpdir } from 'node:os'
+7|import { basename, dirname, join, resolve } from 'node:path'
+8|import process from 'node:process'
+9|import { setTimeout as sleep } from 'node:timers/promises'
+10|import { fileURLToPath } from 'node:url'
+11|import { cleanupWdioSession, createTauriCapabilities, startWdioSession } from '@wdio/tauri-service'
+12|import { assertDesktopArtifactsCurrent } from './artifacts'
+13|
+14|// ============================================================================
+15|// 常量定义
+16|// ============================================================================
+17|
+18|/** 仓库根（本文件位于 `<root>/test/e2e/support/`）。 */
+19|export const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
+20|
+21|/** Debug 构建的固定端口（`src-tauri/src/config/constants.rs:53`）。 */
+22|export const APP_PORT = 3081
+23|
+24|/** 应用主窗口标题（`src-tauri/src/desktop/builder.rs:484`）。 */
+25|export const APP_TITLE = 'DSH Tauri'
+26|
+27|/**
+28| * 主窗口的 webview label，同时也是 WebDriver 的 window handle
+29| * （`src-tauri/src/desktop/builder.rs` 的 `WebviewWindowBuilder::new(app, "main", ...)`）。
+30| */
+31|export const MAIN_WEBVIEW = 'main'
+32|
+33|/** 残留实例的进程名（与 Cargo 主二进制一致）。 */
+34|const APP_PROCESS_NAME = 'deepseek-harness-desktop'
+35|
+36|/** E2E 模式下的 Store 文件名（`config::setting::store_dat_file_name` 的测试分支）。 */
+37|const TEST_STORE_FILE = '.store.test.dat'
+38|
+39|/** scratch home 的目录前缀。 */
+40|const SCRATCH_PREFIX = 'dsh-e2e-desktop-'
+41|
+42|/** WDIO 会话建立上限。 */
+43|const SESSION_TIMEOUT_MS = 120_000
+44|
+45|/** 默认 WebDriver 端口。 */
+46|const DEFAULT_WEBDRIVER_PORT = 4445
+47|
+48|/**
+49| * 解析并校验内嵌 WebDriver 服务端口。
+50| */
+51|function resolveWebDriverPort(): number {
+52|  const raw = process.env.TAURI_WEBDRIVER_PORT?.trim()
+53|  if (!raw)
+54|    return DEFAULT_WEBDRIVER_PORT
+55|
+56|  const port = Number(raw)
+57|  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+58|    throw new Error(`TAURI_WEBDRIVER_PORT 非法：${JSON.stringify(raw)}（需 1–65535 的整数）`)
+59|  }
+60|  return port
+61|}
+62|
+63|export const WEBDRIVER_PORT = resolveWebDriverPort()
+64|
+65|// ============================================================================
+66|// 类型接口
+67|// ============================================================================
+68|
+69|export interface StartDesktopAppOptions {
+70|  /** 覆盖二进制路径（反向用例用它构造「路径不存在」）。 */
+71|  appBinaryPath?: string
+72|  /** 期望二进制存在；`false` 时跳过存在性校验（用于反向用例）。 */
+73|  requireBinary?: boolean
+74|  /** 保留 `$E2E_HOME`（调试用）。 */
+75|  keepHome?: boolean
+76|  /**
+77|   * 覆盖下载缓存根。
+78|   *
+79|   * 默认**复用跨运行的共享缓存**（`$DSH_E2E_DOWNLOAD_CACHE_DIR`，缺省
+80|   * `<os.tmpdir()>/dsh-e2e-download-cache`）：已下好的 Node/dsh 不再每次重下。
+81|   */
+82|  downloadCacheDir?: string
+83|  /**
+84|   * 本次运行使用空缓存：装配必然真的下载并落盘，跑完随 scratch home 一起删除。
+85|   * 等价于 `DSH_E2E_COLD_ASSEMBLY=1`。
+86|   */
+87|  coldCache?: boolean
+88|  /**
+89|   * 复用指定的隔离根（跨重启持久化用例）。
+90|   */
+91|  homeDir?: string
+92|  /** 启动前清理 `<app-data>/.store.test.dat`；复用隔离根（= 重启）时传 `false` 保留 store。 */
+93|  resetStore?: boolean
+94|}
+95|
+96|export interface DesktopApp {
+97|  /** 已建立的 WDIO 会话。 */
+98|  readonly browser: WebdriverIO.Browser
+99|  /** 本次运行独占的隔离根。 */
+100|  readonly home: string
+101|  /** 本次运行使用的下载缓存根（装配落盘断言的观察点）。 */
+102|  readonly downloadCacheDir: string
+103|  /** 应用二进制实际路径。 */
+104|  readonly binaryPath: string
+105|  /** 结束会话（幂等）。 */
+106|  readonly stop: (options?: { keepHome?: boolean }) => Promise<void>
+107|}
+108|
+109|// ============================================================================
+110|// 主入口
+111|// ============================================================================
+112|
+113|/**
+114| * 拉起真实桌面应用并建立 WDIO 会话。
+115| */
+116|export async function startDesktopApp(options: StartDesktopAppOptions = {}): Promise<DesktopApp> {
+117|  const {
+118|    requireBinary = true,
+119|    keepHome = false,
+120|    resetStore = true,
+121|  } = options
+122|
+123|  const binaryPath = options.appBinaryPath ?? defaultBinaryPath()
+124|
+125|  if (requireBinary) {
+126|    await assertPreconditions({ binaryPath })
+127|  }
+128|
+129|  const home = options.homeDir
+130|    ? await assertScratchHome(options.homeDir)
+131|    : await mkdtemp(join(await realpath(tmpdir()), SCRATCH_PREFIX))
+132|  const coldCache = options.coldCache ?? process.env.DSH_E2E_COLD_ASSEMBLY === '1'
+133|  const cacheDir = options.downloadCacheDir
+134|    ?? (coldCache
+135|      ? join(home, 'download-cache')
+136|      : process.env.DSH_E2E_DOWNLOAD_CACHE_DIR ?? join(tmpdir(), 'dsh-e2e-download-cache'))
+137|
+138|  await Promise.all([
+139|    ensureHomeDirs(home),
+140|    mkdir(cacheDir, { recursive: true }),
+141|    resetStore ? resetTestStore(home) : Promise.resolve(),
+142|  ])
+143|
+144|  const profile = join(home, 'home')
+145|  const local = join(profile, 'AppData', 'Local')
+146|  const env: Record<string, string> = {
+147|    USERPROFILE: profile,
+148|    HOME: profile,
+149|    APPDATA: join(profile, 'AppData', 'Roaming'),
+150|    LOCALAPPDATA: local,
+151|    XDG_CONFIG_HOME: join(profile, '.config'),
+152|    XDG_CACHE_HOME: join(profile, '.cache'),
+153|    XDG_DATA_HOME: join(profile, '.local', 'share'),
+154|    DSH_HOME: join(profile, '.dsh.dev'),
+155|    DSH_E2E_HOME: home,
+156|    DSH_DOWNLOAD_CACHE_DIR: cacheDir,
+157|    DSH_E2E_WEBVIEW_DATA_DIR: join(home, 'webview2'),
+158|    PNPM_HOME: join(local, 'pnpm'),
+159|    COREPACK_HOME: join(local, 'corepack'),
+160|    npm_config_userconfig: join(profile, '.npmrc'),
+161|    NPM_CONFIG_USERCONFIG: join(profile, '.npmrc'),
+162|    npm_config_cache: join(profile, '.npm'),
+163|  }
+164|
+165|  const capabilities = createTauriCapabilities(binaryPath, {
+166|    driverProvider: 'embedded',
+167|    startTimeout: SESSION_TIMEOUT_MS,
+168|  })
+169|
+170|  capabilities['wdio:tauriServiceOptions'] = {
+171|    ...capabilities['wdio:tauriServiceOptions'],
+172|    embeddedPort: WEBDRIVER_PORT,
+173|    env,
+174|    startTimeout: SESSION_TIMEOUT_MS,
+175|  }
+176|
+177|  log(`拉起应用：${binaryPath}（E2E_HOME=${home}）`)
+178|
+179|  const startedAt = Date.now()
+180|  let browser: WebdriverIO.Browser | undefined
+181|  let stopped = false
+182|
+183|  const stop = async (stopOptions: { keepHome?: boolean } = {}): Promise<void> => {
+184|    if (stopped)
+185|      return
+186|    stopped = true
+187|
+188|    if (browser !== undefined) {
+189|      try {
+190|        await cleanupWdioSession(browser)
+191|      }
+192|      catch (error) {
+193|        log(`会话清理告警：${(error as Error).message}`)
+194|      }
+195|    }
+196|
+197|    await Promise.all([
+198|      killOrphanHarness(cacheDir),
+199|      waitForPortRelease(WEBDRIVER_PORT, 20),
+200|    ])
+201|    await waitForPortRelease(APP_PORT, 20)
+202|
+203|    if (keepHome || stopOptions.keepHome) {
+204|      log(`保留 scratch home：${home}`)
+205|      return
+206|    }
+207|
+208|    // 带退避重试清理临时隔离目录
+209|    for (let attempt = 1; attempt <= 3; attempt++) {
+210|      try {
+211|        await rm(home, { recursive: true, force: true })
+212|        log(`收尾完成（${Date.now() - startedAt}ms）`)
+213|        return
+214|      }
+215|      catch (error) {
+216|        if (attempt === 3) {
+217|          log(`scratch 未删除（残留 ${home}）：${(error as Error).message}`)
+218|          return
+219|        }
+220|        await sleep(200 * attempt) // 退避等待
+221|      }
+222|    }
+223|  }
+224|
+225|  try {
+226|    browser = await startWdioSession(capabilities, { rootDir: REPO_ROOT })
+227|    await focusMainWindow(browser)
+228|    log(`应用就绪（${Date.now() - startedAt}ms）`)
+229|    return { browser, home, downloadCacheDir: cacheDir, binaryPath, stop }
+230|  }
+231|  catch (error) {
+232|    await stop()
+233|    throw error
+234|  }
+235|}
+236|
+237|// ============================================================================
+238|// 工具函数
+239|// ============================================================================
+240|
+241|function log(message: string): void {
+242|  process.stderr.write(`[desktop] ${message}\\n`)
+243|}
+244|
+245|/** 默认二进制路径。 */
+246|export function defaultBinaryPath(): string {
+247|  const exeSuffix = process.platform === 'win32' ? '.exe' : ''
+248|  return join(REPO_ROOT, 'src-tauri', 'target', 'debug', `${APP_PROCESS_NAME}${exeSuffix}`)
+249|}
+250|
+251|/** 端口是否已被监听。 */
+252|export function isPortBusy(port: number): Promise<boolean> {
+253|  return new Promise((resolve) => {
+254|    const socket = createConnection({ host: '127.0.0.1', port })
+255|
+256|    const cleanup = (busy: boolean): void => {
+257|      socket.removeAllListeners()
+258|      socket.destroy()
+259|      resolve(busy)
+260|    }
+261|
+262|    socket.setTimeout(1_000)
+263|    socket.once('connect', () => cleanup(true))
+264|    socket.once('timeout', () => cleanup(false))
+265|    socket.once('error', () => cleanup(false))
+266|  })
+267|}
+268|
+269|/** 轮询等待指定端口释放（采用指数退避机制）。 */
+270|async function waitForPortRelease(port: number, maxAttempts = 20): Promise<void> {
+[revision=b13c066454d68b730345e3d3c496558fb920357a10b11307cae0db20b1d367a8; more lines; nextOffset=271]
+=== FILE: "E:\\projects\\dsh-video\\package.json" (Lines 1-34 of 34) ===
+1|{
+2|  "name": "my-video",
+3|  "version": "1.0.0",
+4|  "description": "My Remotion video",
+5|  "repository": {},
+6|  "license": "UNLICENSED",
+7|  "engines": {
+8|    "node": "^20.19.0 || ^22.13.0 || >=24"
+9|  },
+10|  "private": true,
+11|  "dependencies": {
+12|    "@remotion/cli": "4.0.538",
+13|    "react": "19.2.3",
+14|    "react-dom": "19.2.3",
+15|    "remotion": "4.0.538"
+16|  },
+17|  "devDependencies": {
+18|    "@remotion/eslint-config-flat": "4.0.538",
+19|    "@types/react": "19.2.7",
+20|    "@types/web": "0.0.166",
+21|    "eslint": "10.12.0",
+22|    "prettier": "3.8.1",
+23|    "typescript": "5.9.3"
+24|  },
+25|  "scripts": {
+26|    "dev": "remotion studio",
+27|    "build": "remotion bundle",
+28|    "upgrade": "remotion upgrade",
+29|    "lint": "eslint src && tsc"
+30|  },
+31|  "allowScripts": {
+32|    "esbuild": false
+33|  }
+34|}
+[revision=b46afaa0887bbb21d1c4c25c7dde4d891f1b6eb12db1ba57d80956640ac71b1c; end of file; complete=true]
+=== FILE: "E:\\projects\\dsh-video\\.gitignore" (Lines 1-16 of 16) ===
+1|node_modules
+2|dist
+3|.DS_Store
+4|.env
+5|
+6|# Ignore the output video from Git but not videos you import into src/.
+7|out
+8|
+9|# Archive task materials and local skills, but never credentials.
+10|.env.*
+11|!.env.example
+12|
+13|# The original FFmpeg archive is committed; unpacked tools are reproducible.
+14|.temp/tools/ffmpeg-unpacked/
+15|# Chrome noise written by remotion render
+16|debug.log
+[revision=60b12056bb06f4abac7f6035e17f34fb70cae73c121f68b4d7233bb6c1d9b338; end of file; complete=true]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\AGENTS.md" (Lines 1-75 of 75) ===
+1|## Workspace Routing & Context Guidelines
+2|
+3|在执行代码分析、优化、重构或单测编写前，必须根据修改对象的**路径、业务域与环境**，主动读取并叠加遵循对应的规范文档：
+4|
+5|### 1. 规范矩阵与路由表 (Specification Routing Matrix)
+6|
+7|| 修改范围 / 触发条件 | 业务场景 / 对应模块 | 必须参照的规范文档 |
+8|| :--- | :--- | :--- |
+9|| **基础通用** | 所有代码修改 | `docs/specs/devlopment.md` |
+10|| **测试标准** | 通用 Unit Test、E2E 集成测试断言与结构 | `docs/specs/testing.md` |
+11|| **桌面端 - 基础架构** | 桌面端主进程、Shell 基础、GUI 渲染核心 | `docs/specs/desktop.baisc.md` |
+12|| **桌面端 - UI 组件** | 设置面板 / 对话框等前端组件的内部分区、派生数据与提交动作组织 | `docs/specs/desktop.ui.md` |
+13|| **桌面端 - 测试验证** | 桌面端 E2E 测试、UI 单元测试、桌面功能测试 | `docs/specs/desktop.test.md` |
+14|| **插件 - 基础架构** | 插件常量归属、跨侧共享约定与退级策略 | `docs/specs/plugin.baisc.md` |
+15|| **插件 - 客户端核心** | 插件 Client 通信、状态管理与客户端逻辑 | `docs/specs/plugin.client.md` |
+16|| **插件 - 客户端面板** | 插件 Panel 视图组件、交互面板 UI | `docs/specs/plugin.client.panel.md` |
+17|| **插件 - 宿主核心** | 宿主进程管理、插件加载器、沙箱隔离 | `docs/specs/plugin.host.md` |
+18|| **插件 - 宿主服务** | 宿主系统级 Service、底座 API 实现 | `docs/specs/plugin.host.service.md` |
+19|| **插件 - 测试套件** | 插件 Mock 测试、沙箱运行测试、集成测试 | `docs/specs/plugin.test.md` |
+20|| **上游同步/依赖管理** | Upstream 仓库同步、依赖重构、版本兼容 | `docs/specs/upstram.sync.md` |
+21|
+22|### 2. 规范叠加与优先级 (Specification Stacking Rules)
+23|- **通用基础**：`docs/specs/devlopment.md` 为全局必须叠加的基础规范。
+24|- **多模块协同**：若同时跨越桌面端与插件（例如：优化插件面板及其与桌面宿主的通信），**必须同时读取并整合**涉及的所有子规范。
+25|- **冲突裁决**：当规则冲突时，优先级为 `专项/业务规范 > 运行环境规范 > devlopment.md`。
+26|
+27|---
+28|
+29|## 最高优先级 (Strict Guidelines)
+30|
+31|1. **隐私与目录隔离**：
+32|   - 严禁查看 `archive/` 目录下的任何内容，除非用户明确提及并给予特殊许可。
+33|2. **极致代码精简与注释策略**：
+34|   - **0 注释原则**：编写/重构代码时必须保持 **0 注释**，仅允许在极难通过代码自解释的**关键节点/复杂算法**添加微量注释。
+35|   - **清理冗余**：优化时若发现代码中存在大面积文档描述、历史残余注释或冗余代码，应主动清理/精简，提升干净度。
+36|3. **临时草稿区**：
+37|   - 若需要临时记录、存放中间分析过程或草稿，可随意在 `.temp` 文件中编写（该文件下拥有绝对自由度）。
+38|4. **插件开发保护**：
+39|   - 在处理或重构插件相关代码时，**切勿执行构建（Build）命令**（用户可能正处于 Dev 开发热重载状态）。
+40|
+41|---
+42|
+43|## 沟通与评论规范 (Reply & Comment Rules)
+44|
+45|回复用户、以及在 issue / PR 下留言时，一律适用：
+46|
+47|1. **短。先给结论**：
+48|   - 默认三五句说完。不写小标题、不写表格、不写清单堆砌；只有用户明确要「详细/完整报告」时才展开。
+49|   - 不复述刚跑过的命令、文件清单或工具输出，用户不关心过程。
+50|2. **说人话，不要 AI 腔**：
+51|   - 禁止「综上所述」「值得注意的是」「希望能帮到你」这类套话，禁止 emoji 装饰与 ✅🎉 式排版。
+52|   - 正文用中文；仅代码、命令、标识符与官方术语保留英文，不要中英夹杂堆术语。
+53|3. **不刷屏**：
+54|   - 同一话题只留一条评论/一条回复。写长了或写错了，原地编辑（`gh api --method PATCH`），不要补发第二条。
+55|   - 链接与代码块只留必要的那一两条，堆参考链接视为噪音。
+56|4. **结论要能落地**：
+57|   - 推荐方案必须给一条可直接复制的命令，并诚实标注限制：不支持、已失效、只是缓解，都要写清楚。
+58|
+59|---
+60|
+61|## Command Performance Constraints (Strictly Enforced)
+62|
+63|执行文件查找或代码检索时，必须遵守极速命令约束，避免触发低效遍历：
+64|
+65|1. **FORBIDDEN POWERSHELL COMMANDS:**
+66|   - **NEVER** use `Get-ChildItem -Recurse` or `dir -s` to search files/directories.
+67|   - **NEVER** use `Select-String -Path` for recursive text searches.
+68|
+69|2. **FAST ALTERNATIVES (MANDATORY):**
+70|   - **Searching text in files:** Use `rg "pattern"` (ripgrep).
+71|   - **Finding files by name/path:** Use `fd <pattern>` or `git ls-files | Select-String "pattern"`.
+72|   - **Listing top-level directory items:** Use simple `Get-ChildItem` (NO `-Recurse`).
+73|
+74|3. **GIT PROJECT EXEMPTION:**
+75|   - Always leverage Git index if available: `git ls-files` is exponentially faster than PowerShell directory traversal.
+[revision=4d5c5301d9ef09070a74d91668742db13dfa1841eb8aee48747868fa0b33846a; end of file; complete=true]
+[Notice: 5/5 requested ranges returned.]
+
+[tool • ops_bash]
+[stderr]
+rg: .temp/recording-20261024: 系统找不到指定的文件。 (os error 2)
+rg: ../deepseek-harness-desktop/vendor: 系统找不到指定的文件。 (os error 2)
+rg: ../deepseek-harness-desktop/.local: 系统找不到指定的文件。 (os error 2)
+
+[COMMAND_FAILED; effects: unknown; retry: never] Do not repeat the command. Inspect its effects with a read-only operation first.
+[exit code: 2]
+
+[assistant • skill]
+{"name":"ego-browser"}
+
+[assistant • skill]
+{"name":"tauri"}
+
+[assistant • skill]
+{"name":"remotion-best-practices"}
+
+[assistant • skill]
+{"name":"ponytail"}
+
+[assistant • ops_bash]
+{"command":"rg -n 'TAURI_WEBDRIVER_PORT|wdio|DSH_E2E_WEBVIEW|additional_browser|devtools|single_instance|single-instance' ../deepseek-harness-desktop/src-tauri/src ../deepseek-harness-desktop/src-tauri/Cargo.toml && rg -n 'get_dsh_data_path|data_dir' ../deepseek-harness-desktop/src-tauri/src/config/setting.rs && git -C ../deepseek-harness-desktop status --short","description":"Inspect desktop isolation controls and checkout state"}
+
+[assistant • ops_read_files]
+{"files":[{"path":"../deepseek-harness-desktop/src-tauri/src/config/constants.rs","offset":1,"limit":100},{"path":"../deepseek-harness-desktop/src-tauri/src/desktop/builder.rs","offset":420,"limit":190}]}
+
+[tool • skill]
+<skill_content name="ego-browser">
+<skill_resources>
+Base directory for this skill: E:\projects\dsh-video\.agents\skills\ego-browser
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+# ego-browser
+
+Before any browser task, run:
+
+```bash
+ego-browser skill
+```
+
+and follow its output. It prints the usage guide that matches the installed
+ego lite version. Run it again after `ego-browser upgrade`, or when any output
+says to.
+
+The guide ends with a line starting `[ego-browser:skill] end of guide`. If that
+line is missing, the output was truncated: save it to a file and read the file
+in parts, for example `ego-browser skill > "$TMPDIR/ego-browser-skill.md"`, or
+`ego-browser skill > "$env:TEMP\ego-browser-skill.md"` in PowerShell.
+
+## References
+
+- [Install or upgrade ego lite](references/install.md) — read when
+  `ego-browser` is not found, or `skill` is an unknown command.
+- [Clearing cookies, cache, and storage](references/clearing-state.md) — read
+  before clearing any cookie, cache, or storage; some clears reach the whole
+  browser profile.
+</skill_instructions>
+</skill_content>
+
+[tool • skill]
+<skill_content name="tauri">
+<skill_resources>
+Base directory for this skill: C:\Users\hairy\.agents\skills\tauri
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+Tauri lets you build desktop (and mobile) apps with a Rust Core process and a frontend running in the OS WebView. Use these skills when scaffolding projects, wiring commands and events, configuring capabilities and permissions, or authoring plugins.
+
+> The skill is based on Tauri v2, generated at 2026-01-30.
+
+## Core References
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Architecture | Core crates, WRY/TAO, tooling, plugins | [core-architecture](references/core-architecture.md) |
+| IPC | Events (fire-and-forget) vs Commands (invoke/response), when to use each | [core-ipc](references/core-ipc.md) |
+| Process Model | Core process vs WebView processes, security implications | [core-process-model](references/core-process-model.md) |
+| Project Structure | src-tauri layout, tauri.conf.json, capabilities, build flow | [core-project-structure](references/core-project-structure.md) |
+| App Size | Why small, Cargo release profile (LTO, strip, opt-level) | [concept-size](references/concept-size.md) |
+| IPC Patterns | Brownfield (default) vs Isolation (sandbox, encrypt) | [concept-ipc-patterns](references/concept-ipc-patterns.md) |
+
+## Start
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Create Project | create-tauri-app vs tauri init, dev server URL | [start-create-project](references/start-create-project.md) |
+| Prerequisites | System deps, Rust, Node, WebView2, mobile (Android/iOS) | [start-prerequisites](references/start-prerequisites.md) |
+| Frontend | Static host model, Vite/Next/Nuxt/SvelteKit/Leptos/Trunk | [start-frontend](references/start-frontend.md) |
+| Migrate | Upgrading from Tauri 1.x or 2 beta, migrate command | [start-migrate](references/start-migrate.md) |
+
+## Develop
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Configuration Files | tauri.conf.json, platform overrides, Cargo.toml, package.json | [develop-configuration-files](references/develop-configuration-files.md) |
+| Commands | #[tauri::command], invoke, args, errors, async, State, channels | [develop-commands](references/develop-commands.md) |
+| Events and Channels | Emit/listen, global vs webview-specific, streaming with Channel | [develop-events-and-channels](references/develop-events-and-channels.md) |
+| State Management | app.manage(), State\<T\> in commands, Mutex | [develop-state-management](references/develop-state-management.md) |
+| Windows | Creating windows (config vs WebviewWindowBuilder), label, url, visible | [develop-windows](references/develop-windows.md) |
+| Icons | tauri icon command, bundle.icon, platform formats | [develop-icons](references/develop-icons.md) |
+| Resources | Bundled resources, resolve path, $RESOURCE, fs permissions | [develop-resources](references/develop-resources.md) |
+| Sidecar | externalBin, shell plugin, spawn from Rust/JS, permissions | [develop-sidecar](references/develop-sidecar.md) |
+| Debug | dev vs build, Rust console, WebView devtools, RUST_BACKTRACE | [develop-debug](references/develop-debug.md) |
+| Tests | Mock runtime, WebDriver E2E, CI | [develop-tests](references/develop-tests.md) |
+| Tests Mocking | mockIPC, mockWindows, clearMocks (frontend tests) | [develop-tests-mocking](references/develop-tests-mocking.md) |
+| Tests WebDriver | tauri-driver, platform drivers, Selenium/WebdriverIO, CI | [develop-tests-webdriver](references/develop-tests-webdriver.md) |
+| Updating Dependencies | npm/Cargo version sync, tauri and plugins | [develop-updating-dependencies](references/develop-updating-dependencies.md) |
+| Plugins Mobile | Android (Kotlin), iOS (Swift), desktop vs mobile impl | [develop-plugins-mobile](references/develop-plugins-mobile.md) |
+
+## Security
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Capabilities | Which permissions apply to which windows; capability files, remote, platforms | [security-capabilities](references/security-capabilities.md) |
+| Permissions | Allow/deny commands, scopes, permission sets; plugin vs app permissions | [security-permissions](references/security-permissions.md) |
+| Scopes | allow/deny per command or global, path/URL patterns | [security-scope](references/security-scope.md) |
+| CSP | Content Security Policy config, script-src, style-src | [security-csp](references/security-csp.md) |
+| HTTP Headers | CORS, COOP, Permissions-Policy for webview responses | [security-http-headers](references/security-http-headers.md) |
+| Runtime Authority | Core enforces permissions on every invoke; denied = never run | [security-runtime-authority](references/security-runtime-authority.md) |
+
+## Best Practices
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Security Lifecycle | Upstream, development, build, runtime; deps, audit, dev server | [best-practices-security-lifecycle](references/best-practices-security-lifecycle.md) |
+| Writing Plugin Permissions | Autogenerated allow/deny, permission files, default set, scope schema | [best-practices-writing-plugin-permissions](references/best-practices-writing-plugin-permissions.md) |
+
+## Features
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Plugins | Plugin development, lifecycle hooks, commands, permissions, state | [features-plugins](references/features-plugins.md) |
+| Official Plugins Overview | dialog, fs, shell, store, updater, and others; when to use which | [features-official-plugins-overview](references/features-official-plugins-overview.md) |
+| Deep Linking | Custom URL scheme, App/Universal Links, single-instance + argv | [features-deep-linking](references/features-deep-linking.md) |
+| Updater | In-app updates — check, download, install, signing, static/dynamic endpoints | [features-updater](references/features-updater.md) |
+
+## Distribute
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Packaging | build, bundle, installers (DMG, MSI, AppImage, etc.), signing overview | [distribute-packaging](references/distribute-packaging.md) |
+| Signing | Code signing per platform (macOS, Windows, Linux, Android, iOS) | [distribute-signing](references/distribute-signing.md) |
+| Pipelines | GitHub Actions (tauri-action), CI signing, CrabNebula Cloud | [distribute-pipelines](references/distribute-pipelines.md) |
+
+## Learn
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Menus and Tray | Window menu, system tray, Menu/TrayIcon, predefined items | [learn-windows-menus-tray](references/learn-windows-menus-tray.md) |
+| Window Customization | Custom titlebar, decorations, data-tauri-drag-region, transparent (macOS) | [learn-window-customization](references/learn-window-customization.md) |
+| Splashscreen | Extra window, visible/hidden main, setup tasks, close when ready | [learn-splashscreen](references/learn-splashscreen.md) |
+| Sidecar Node.js | Node app as binary (pkg), externalBin, shell plugin | [learn-sidecar-nodejs](references/learn-sidecar-nodejs.md) |
+| Using Plugin Permissions | Add plugin, capability, allow commands, default permissions | [learn-using-plugin-permissions](references/learn-using-plugin-permissions.md) |
+| Capabilities per Window/Platform | Different capabilities per window; platforms array | [learn-capabilities-windows-platforms](references/learn-capabilities-windows-platforms.md) |
+
+## Reference
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| CLI | dev, build, icon, init, migrate, bundle | [reference-cli](references/reference-cli.md) |
+| Environment Variables | CI, config depth, signing, Apple/Windows/Linux, hook env | [reference-environment-variables](references/reference-environment-variables.md) |
+| WebView Versions | WebView2 (Windows), WKWebView (macOS/iOS), WebKitGTK (Linux) | [reference-webview-versions](references/reference-webview-versions.md) |
+| Core Permissions (ACL) | core:default, app, event, window, path, menu, tray, resources | [reference-acl-core-permissions](references/reference-acl-core-permissions.md) |
+</skill_instructions>
+</skill_content>
+
+[tool • skill]
+<skill_content name="remotion-best-practices">
+<skill_resources>
+Base directory for this skill: E:\projects\dsh-video\.agents\skills\remotion-best-practices
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+## Preserve user changes
+
+Users may make edits in the code outside of the conversation.
+
+If you detect a surprising change made in the meanwhile, don't overwrite it, assume it was intentional or ask for confirmation.
+
+## Creating a video
+
+If the user asks to make, create, or build a new video or composition, load [Create a new Remotion video](./remotion-create/REFERENCE.md), whether or not a Remotion project already exists.
+
+## New project setup
+
+If no Remotion project currently exists, load [Create a new Remotion project](./remotion-create/REFERENCE.md)
+
+## React Markup Best Practices
+
+If you are writing Remotion React Markup, load [Remotion Markup Best Practices](./remotion-markup/REFERENCE.md)
+
+## Maps
+
+For static maps, animated routes and markers, geographic explainers, Mapbox, MapLibre, MapTiler, GeoJSON, or 3D geographic flyovers, load [Remotion Maps](./remotion-maps/REFERENCE.md).
+
+## Multimedia
+
+For achieving multimedia tasks in the browser, such as trimming, cropping videos, or getting metadata from them, load [Remotion Multimedia](./remotion-multimedia/REFERENCE.md)
+
+## Improving Interactivity
+
+By structuring the Remotion markup well, we can allow users to interactively change things in the Studio and write back to code. If relevant: [Interactivity Best Practices](./remotion-interactivity/REFERENCE.md)
+
+## Open the preview
+
+If the user asks to "make" a video, "create" a video, etc.
+Don't render the video by default unless they are very explicit. They want to instead see an interactive preview.
+As soon as the project can run, start Studio and open the preview in the browser before building or editing the composition. Keep it open while you work so the user can watch progress and steer.
+
+### If you are using Cursor
+
+Run Studio without `--no-open` so it opens the browser automatically:
+
+```bash
+npx remotion studio
+```
+
+### If you are using another agent client with an in-app browser
+
+You can use the command above to let Studio open the browser, or run:
+
+```bash
+npx remotion studio --no-open
+```
+
+This will start a long-running process and print the server URL for the preview.  
+If the server is already started, it will print the URL.
+If you use `--no-open`, open the exact printed URL in the in-app browser and verify that Studio loads. Once a composition exists, verify that its video preview loads. If you cannot open it there, run Studio without `--no-open`.
+You can visit a specific composition by navigating to `/[composition-id]`, for example `http://localhost:3000/MapAnimation`.
+
+:::note
+The Studio supports WebMCP tools.
+:::
+
+### If you do not have an in-app browser
+
+This will open the Studio in the browser or refocus it if it is already open.
+
+```bash
+npx remotion studio
+```
+
+### More options
+
+To launch a project in Remotion Studio, open its exact local URL, or configure Studio CLI flags, load [Remotion Studio](./remotion-studio/REFERENCE.md).
+
+## Render the video
+
+Only render if the user is very explicit in asking for it.  
+E.g. "Render the video", "Export", "Give me the MP4".
+
+The preview also has a more intuitive rendering interface, so consider using it instead of the command line for rendering.
+
+```
+npx remotion render
+```
+
+For more options, see [Rendering](./remotion-render/REFERENCE.md).
+
+For advanced rendering beyond simple `npx remotion render`, see: [Rendering Best Practices](./remotion-render/REFERENCE.md)
+
+## Captions
+
+When working with Captions, load [Remotion Captions](./remotion-captions/REFERENCE.md).
+
+## Creating a SaaS, automation or application
+
+Use the [Remotion SaaS skill](./remotion-saas/REFERENCE.md) for knowledge about Remotion-powered SaaS apps, such as `<Player>`, rendering on Lambda, Vercel, Cloudflare, via Express.js, client-side rendering, or for finding the right SaaS template.
+
+## Looking up Remotion APIs and documentation
+
+To find and read current Remotion documentation, load [Remotion Docs](./remotion-docs/REFERENCE.md).
+
+## Upgrading
+
+To upgrade Remotion, related packages, compatible Mediabunny packages, and installed Remotion Agent Skills, load [Remotion Upgrade](./remotion-upgrade/REFERENCE.md).
+</skill_instructions>
+</skill_content>
+
+[tool • skill]
+<skill_content name="ponytail">
+<skill_resources>
+Base directory for this skill: C:\Users\hairy\.dsh\profiles\core-021\node_modules\@wenaixi\dsh-ponytail\skills\ponytail
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+# Ponytail
+
+You are a lazy senior developer. Lazy means efficient, not careless. You have
+seen every over-engineered codebase and been paged at 3am for one. The best
+code is the code never written.
+
+## Persistence
+
+ACTIVE EVERY RESPONSE. No drift back to over-building. Still active if
+unsure. Off only: "stop ponytail" / "normal mode". Default: **full**.
+Switch: `/ponytail lite|full|ultra`.
+
+## The ladder
+
+Stop at the first rung that holds:
+
+1. **Does this need to exist at all?** Speculative need = skip it, say so in one line. (YAGNI)
+2. **Already in this codebase?** A helper, util, type, or pattern that already lives here → reuse it. Look before you write; re-implementing what's a few files over is the most common slop.
+3. **Stdlib does it?** Use it.
+4. **Native platform feature covers it?** `<input type="date">` over a picker lib, CSS over JS, DB constraint over app code.
+5. **Already-installed dependency solves it?** Use it. Never add a new one for what a few lines can do.
+6. **Can it be one line?** One line.
+7. **Only then:** the minimum code that works.
+
+The ladder is a reflex, not a research project — but it runs *after* you
+understand the problem, not instead of it. Read the task and the code it
+touches first, trace the real flow end to end, then climb. Two rungs work →
+take the higher one and move on. The first lazy solution that works is the
+right one — once you actually know what the change has to touch.
+
+**Bug fix = root cause, not symptom.** A report names a symptom. Before you
+edit, grep every caller of the function you're about to touch. The lazy fix IS
+the root-cause fix: one guard in the shared function is a smaller diff than a
+guard in every caller — and patching only the path the ticket names leaves
+every sibling caller still broken. Fix it once, where all callers route through.
+
+## Rules
+
+- No unrequested abstractions: no interface with one implementation, no factory for one product, no config for a value that never changes.
+- No boilerplate, no scaffolding "for later", later can scaffold for itself.
+- Deletion over addition. Boring over clever, clever is what someone decodes at 3am.
+- Fewest files possible. Shortest working diff wins — but only once you understand the problem. The smallest change in the wrong place isn't lazy, it's a second bug.
+- Complex request? Ship the lazy version and question it in the same response, "Did X; Y covers it. Need full X? Say so." Never stall on an answer you can default.
+- Two stdlib options, same size? Take the one that's correct on edge cases. Lazy means writing less code, not picking the flimsier algorithm.
+- Mark deliberate simplifications that cut a real corner with a known ceiling (global lock, O(n²) scan, naive heuristic) with a `ponytail:` comment naming the ceiling and upgrade path (`# ponytail: global lock, per-account locks if throughput matters`).
+
+## Output
+
+Code first. Then at most three short lines: what was skipped, when to add it.
+No essays, no feature tours, no design notes. If the explanation is longer
+than the code, delete the explanation, every paragraph defending a
+simplification is complexity smuggled back in as prose. Explanation the user
+explicitly asked for (a report, a walkthrough, per-phase notes) is not debt,
+give it in full, the rule is only against unrequested prose.
+
+Pattern: `[code] → skipped: [X], add when [Y].`
+
+## Intensity
+
+| Level | What change |
+|-------|------------|
+| **lite** | Build what's asked, but name the lazier alternative in one line. User picks. |
+| **full** | The ladder enforced. Stdlib and native first. Shortest diff, shortest explanation. Default. |
+| **ultra** | YAGNI extremist. Deletion before addition. Ship the one-liner and challenge the rest of the requirement in the same breath. |
+
+Example: "Add a cache for these API responses."
+- lite: "Done, cache added. FYI: `functools.lru_cache` covers this in one line if you'd rather not own a cache class."
+- full: "`@lru_cache(maxsize=1000)` on the fetch function. Skipped custom cache class, add when lru_cache measurably falls short."
+- ultra: "No cache until a profiler says so. When it does: `@lru_cache`. A hand-rolled TTL cache class is a bug farm with a hit rate."
+
+## When NOT to be lazy
+
+Never simplify away: input validation at trust boundaries, error handling
+that prevents data loss, security measures, accessibility basics, anything
+explicitly requested. User insists on the full version → build it, no
+re-arguing.
+
+Never lazy about understanding the problem. The ladder shortens the
+solution, never the reading. Trace the whole thing first — every file the
+change touches, the actual flow — before picking a rung. Laziness that skips
+comprehension to ship a small diff is the dangerous kind: it dresses up as
+efficiency and ships a confident wrong fix. Read fully, then be lazy.
+
+Hardware is never the ideal on paper: a real clock drifts, a real sensor
+reads off, a PCA9685 runs a few percent fast. Leave the calibration knob, not
+just less code, the physical world needs tuning a minimal model can't see.
+
+Lazy code without its check is unfinished. Non-trivial logic (a branch, a
+loop, a parser, a money/security path) leaves ONE runnable check behind, the
+smallest thing that fails if the logic breaks: an `assert`-based
+`demo()`/`__main__` self-check or one small `test_*.py`. No frameworks, no
+fixtures, no per-function suites unless asked. Trivial one-liners need no
+test, YAGNI applies to tests too.
+
+## Boundaries
+
+Ponytail governs what you build, not how you talk (pair with Caveman for
+terse prose). "stop ponytail" / "normal mode": revert. Level persists until
+changed or session end.
+
+The shortest path to done is the right path.
+</skill_instructions>
+</skill_content>
+
+[tool • ops_bash]
+../deepseek-harness-desktop/src-tauri/src\utils\mod.rs:108:        // RunEvent::Reopen、release single-instance 四条恢复路径。
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:196:        #[cfg(all(windows, not(debug_assertions)))] single_instance: Arc<
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:197:            crate::desktop::single_instance::SingleInstance,
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:211:            single_instance,
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:255:        #[cfg(not(debug_assertions))] single_instance: Arc<
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:256:            crate::desktop::single_instance::SingleInstance,
+../deepseek-harness-desktop/src-tauri/src\service\workflow\early.rs:306:                let _single_instance = single_instance;
+../deepseek-harness-desktop/src-tauri/src\service\core\local_update_tests.rs:79:            .env("TAURI_WEBDRIVER_PORT", "4445")
+../deepseek-harness-desktop/src-tauri/src\lib.rs:81:    let single_instance = match desktop::single_instance::claim(&context.config().identifier)? {
+../deepseek-harness-desktop/src-tauri/src\lib.rs:88:        single_instance.clone(),
+../deepseek-harness-desktop/src-tauri/src\lib.rs:98:                if let Err(error) = single_instance.attach(app_handle) {
+../deepseek-harness-desktop/src-tauri/src\config\constants.rs:102:/// E2E 信号环境变量：与 `tauri-plugin-wdio-webdriver` 的门控同源——该插件只在
+../deepseek-harness-desktop/src-tauri/src\config\constants.rs:104:pub const E2E_PORT_ENV_VAR: &str = "TAURI_WEBDRIVER_PORT";
+../deepseek-harness-desktop/src-tauri/src\config\constants.rs:119:pub const E2E_WEBVIEW_DATA_DIR_ENV_VAR: &str = "DSH_E2E_WEBVIEW_DATA_DIR";
+../deepseek-harness-desktop/src-tauri/src\config\i18n.rs:83:        "menu.toggle_devtools" => ("切换开发者工具", "Toggle Developer Tools"),
+../deepseek-harness-desktop/src-tauri/src\service\update\install.rs:792:        tauri_plugin_single_instance::destroy(app_handle);
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:438:    let toggle_devtools = MenuItem::with_id(
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:440:        "desktop-toggle-devtools",
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:441:        crate::config::i18n::t("menu.toggle_devtools"),
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:495:            &toggle_devtools,
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:889:        .additional_browser_args(WINDOWS_SHELL_BROWSER_ARGS)
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1672:        crate::desktop::window::toggle_devtools,
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1724:    // E2E：内嵌 WebDriver server 只在 E2E 进程装配（`@wdio/tauri-service` 拉起应用时注入
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1725:    // TAURI_WEBDRIVER_PORT）。插件一旦注册就会无条件监听 127.0.0.1:4445，并接管每个 webview
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1729:        builder = builder.plugin(tauri_plugin_wdio_webdriver::init());
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1822:            | "desktop-toggle-devtools"
+../deepseek-harness-desktop/src-tauri/src\desktop\builder.rs:1978:    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+../deepseek-harness-desktop/src-tauri/src\desktop\activation.rs:11://! （启动台·Spotlight）/ release single-instance。
+../deepseek-harness-desktop/src-tauri/src\desktop\activation.rs:143:/// 一次覆盖托盘菜单「打开面板」/ 托盘左键 / `RunEvent::Reopen` / single-instance
+../deepseek-harness-desktop/src-tauri/src\desktop\mod.rs:16:pub(crate) mod single_instance;
+../deepseek-harness-desktop/src-tauri/src\desktop\single_instance.rs:286:            .name("single-instance".into())
+../deepseek-harness-desktop/src-tauri/src\desktop\single_instance.rs:530:            "single-instance-check-{}-{}",
+../deepseek-harness-desktop/src-tauri/src\desktop\single_instance.rs:599:            "single-instance-lease-check-{}-{}",
+../deepseek-harness-desktop/src-tauri/src\desktop\single_instance.rs:615:            let _single_instance = worker_lease;
+../deepseek-harness-desktop/src-tauri/src\desktop\startup.rs:152:                .env("TAURI_WEBDRIVER_PORT", "4445")
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:260:/// Windows 侧（wry 0.57 + WebView2）`is_devtools_open()` 恒为 false 且
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:261:/// `close_devtools()` 是空实现，重复调用等价于再次打开/聚焦，不会误关。
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:263:pub fn toggle_devtools(window: WebviewWindow<Wry>) {
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:264:    if window.is_devtools_open() {
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:265:        window.close_devtools();
+../deepseek-harness-desktop/src-tauri/src\desktop\window.rs:267:        window.open_devtools();
+../deepseek-harness-desktop/src-tauri/Cargo.toml:33:  "devtools",
+../deepseek-harness-desktop/src-tauri/Cargo.toml:38:# 仅当进程环境带 TAURI_WEBDRIVER_PORT 时监听，正常运行不开放端口。
+../deepseek-harness-desktop/src-tauri/Cargo.toml:39:tauri-plugin-wdio-webdriver = "1"
+../deepseek-harness-desktop/src-tauri/Cargo.toml:42:tauri-plugin-single-instance = { version = "2", features = [ "deep-link" ] }
+../deepseek-harness-desktop/src-tauri/Cargo.toml:159:# E2E 基础设施：上游 `tauri-plugin-wdio-webdriver` 的帧上下文靠 JS 模拟
+../deepseek-harness-desktop/src-tauri/Cargo.toml:167:tauri-plugin-wdio-webdriver = { path = "vendor/tauri-plugin-wdio-webdriver" }
+246:pub(crate) fn e2e_app_data_dir() -> Result<Option<std::path::PathBuf>, String> {
+247:    resolve_e2e_app_data_dir(is_e2e_run(), std::env::var_os("DSH_E2E_HOME").as_deref())
+250:fn resolve_e2e_app_data_dir(
+332:    detect_first_install_at(app_handle.path().app_data_dir().ok().as_deref())
+472:        preserve_persisted_fields, resolve_e2e_app_data_dir, resolve_store_dat_file,
+532:            let error = resolve_e2e_app_data_dir(true, home.map(std::ffi::OsStr::new)).unwrap_err();
+540:            assert!(resolve_e2e_app_data_dir(true, Some(std::ffi::OsStr::new(home))).is_err());
+544:            resolve_e2e_app_data_dir(true, Some(home.path().as_os_str())).unwrap(),
+559:            assert_eq!(resolve_e2e_app_data_dir(false, candidate), Ok(None));
+
+[exit code: 0]
+
+[tool • ops_read_files]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\src-tauri\\src\\config\\constants.rs" (Lines 1-100 of 171) ===
+1|use std::time::Duration;
+2|
+3|/// 捆绑的 Node.js 运行时版本（满足当前 DSH 的 v22.19.0+ 或 v24+ 要求）
+4|pub const NODE_VERSION: &str = "v22.22.0";
+5|
+6|/// Node.js 官方下载地址
+7|pub const NODE_BASE_URL: &str = "https://nodejs.org/dist/";
+8|
+9|/// Node.js 镜像下载地址（npmmirror，302 重定向至 cdn.npmmirror.com）
+10|pub const NODE_MIRROR_BASE_URL: &str = "https://npmmirror.com/mirrors/node/";
+11|
+12|/// 打包的 DeepSeek Harness 发行版下载地址（GitHub Release，默认首选源）
+13|pub const DSH_CORE_URL: &str =
+14|    "https://github.com/dsh-tauri-desk/deepseek-harness-pkg/releases/latest/download/";
+15|
+16|/// GitHub Release 的代理镜像前缀列表（透传官方 URL，下载内容一致、
+17|/// 仍可做 SHA-256 完整性校验），按实测延迟从低到高排列，官方直连失败时依次兜底。
+18|pub const DSH_MIRROR_PREFIXES: &[&str] = &[
+19|    "https://gh-proxy.com/",
+20|    "https://gh.llkk.cc/",
+21|    "https://ghfast.top/",
+22|    "https://ghproxy.net/",
+23|];
+24|
+25|/// 捆绑的 pnpm 版本（与 deepseek-harness-pkg 的 packageManager: pnpm@11.7.0 对齐）
+26|pub const PNPM_VERSION: &str = "11.7.0";
+27|/// pnpm 11.7.0 官方 npm tarball 的 SHA-256；升级版本时必须同步更新。
+28|pub const PNPM_SHA256: &str = "deafa7ec98a1218b6a047289b92fbe2395c1e22d3495bb711653013218ee15ee";
+29|
+30|/// pnpm 官方 npm registry tarball 下载地址前缀（纯 JS 发行，全平台同一 URL）
+31|pub const PNPM_BASE_URL: &str = "https://registry.npmjs.org/pnpm/-/";
+32|
+33|/// Windows 空白环境使用的免安装 MinGit 版本。
+34|#[cfg_attr(all(not(windows), not(test)), allow(dead_code))] // 仅 Windows 的 MinGit 任务与单测使用
+35|pub const MINGIT_VERSION: &str = "2.53.0.2";
+36|/// MinGit x64 官方发行包 SHA-256。
+37|#[cfg_attr(all(not(windows), not(test)), allow(dead_code))] // 仅 Windows 的 MinGit 任务与单测使用
+38|pub const MINGIT_X64_SHA256: &str =
+39|    "d4bf83d6a860ccae9af44e508e1e00a39f09db6fa78a9ba5543b94d87ca22a29";
+40|/// MinGit ARM64 官方发行包 SHA-256。
+41|#[cfg_attr(all(not(windows), not(test)), allow(dead_code))] // 仅 Windows 的 MinGit 任务与单测使用
+42|pub const MINGIT_ARM64_SHA256: &str =
+43|    "842d50edc6bbcf39693e60a8ebb9dabb89b96b932b63aae12d218522b3e497f3";
+44|/// Git for Windows 官方发行资产地址前缀。
+45|#[cfg_attr(all(not(windows), not(test)), allow(dead_code))] // 仅 Windows 的 MinGit 任务与单测使用
+46|pub const MINGIT_BASE_URL: &str =
+47|    "https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.2/";
+48|
+49|/// pnpm 镜像下载地址前缀（npmmirror registry，302 重定向至 cdn.npmmirror.com）
+50|pub const PNPM_MIRROR_BASE_URL: &str = "https://registry.npmmirror.com/pnpm/-/";
+51|
+52|/// Harness 服务地址与默认端口
+53|pub const DSH_HOST: &str = "http://127.0.0.1";
+54|
+55|pub fn get_dsh_service_url(port: u16) -> String {
+56|    format!("{DSH_HOST}:{port}")
+57|}
+58|
+59|/// 生产（release）默认端口
+60|pub const DSH_PORT: u16 = 3080;
+61|/// 开发（debug）默认端口：与生产隔离，避免 `pnpm tauri dev` 与已安装桌面端
+62|/// 争用同一个 3080 端口冲突。
+63|pub const DSH_DEV_PORT: u16 = 3081;
+64|
+65|/// 官方 Harness 用户数据目录名：release 构建的 `$DSH_HOME` 默认目录（`~/.dsh`，
+66|/// 与官方 node 安装保持一致）。
+67|pub const DSH_HOME_DIR_NAME: &str = ".dsh";
+68|/// 开发（debug）构建的用户数据目录名（`~/.dsh.dev`）：与生产数据目录隔离。
+69|/// 会话、档案、插件与主题等数据各自独立——`pnpm tauri dev` 与已安装桌面端
+70|/// 同时运行时互不干扰，也不会互相污染对方的会话数据。
+71|pub const DSH_HOME_DEV_DIR_NAME: &str = ".dsh.dev";
+72|
+73|/// 启动前的目录解析也读取有效构建配置，避免夜间版读写正式版日志和 Store。
+74|pub const APP_IDENTIFIER: &str = env!("DSH_APP_IDENTIFIER");
+75|
+76|pub const HARNESS_PID_MARKER_NAMES: [&str; 2] = [".harness.pid", ".harness-nightly.pid"];
+77|
+78|/// 开发构建在 AppData 下使用的独立子目录。Node、Harness、pnpm、Git 等可执行
+79|/// 核心不应与 release 共用，否则开发版更新/切换核心会替换正在运行的生产文件。
+80|pub const APP_DATA_DEV_DIR_NAME: &str = "dev";
+81|
+82|/// Harness 发行版清单文件名（相对安装根）。安装根、入口相对路径由
+83|/// `resources/manifest.jsonc` 的 `dependencies.dsh` 与 AppData 依赖映射表决定。
+84|pub const DSH_MANIFEST_RELATIVE: &str = "package.json";
+85|
+86|/// 开发构建的用户级 shim 根目录名，不与 release 的 CLI 集成目录冲突。
+87|#[cfg_attr(not(windows), allow(dead_code))] // 仅 Windows 的 bin 目录计算使用
+88|pub const CLI_ROOT_DEV_DIR_NAME: &str = "dev-dsh";
+89|
+90|/// 简单 Store 持久化
+91|pub const STORE_DAT_FILE: &str = ".store.dat";
+92|/// 开发（debug）构建的 Store 持久化文件名：与生产隔离，避免端口、installed、
+93|/// active_core 等设置跨版本互写（生产默认 3080、开发默认 3081，共用一份
+94|/// store 会让两边端口一路漂移并相互污染状态）。
+95|pub const STORE_DAT_DEV_FILE: &str = ".store.dev.dat";
+96|/// E2E 构建的 Store 持久化文件名：与开发/生产三方隔离。
+97|///
+98|/// 测试跑的是 debug 二进制，若复用 `.store.dev.dat`，用例写入的窗口几何会覆盖
+99|/// 用户正在使用的开发版配置（且 `app_data_dir()` 由 `SHGetKnownFolderPath` 解析，
+100|/// 重定向 `APPDATA`/`USERPROFILE` 环境变量**无法**把它引到 scratch 目录）。
+[revision=4074d0a39cc846b11e69a60d5ab4a030bbc5af57e96fad955731265ba97bdc3a; more lines; nextOffset=101]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\src-tauri\\src\\desktop\\builder.rs" (Lines 420-609 of 2035) ===
+420|            &settings_separator,
+421|            &services,
+422|            &services_separator,
+423|            &hide,
+424|            &hide_others,
+425|            &show_all,
+426|            &quit_separator,
+427|            &quit,
+428|        ],
+429|    )?;
+430|
+431|    let run_logs = MenuItem::with_id(
+432|        app,
+433|        "desktop-copy-run-logs",
+434|        crate::config::i18n::t("menu.run_logs"),
+435|        true,
+436|        None::<&str>,
+437|    )?;
+438|    let toggle_devtools = MenuItem::with_id(
+439|        app,
+440|        "desktop-toggle-devtools",
+441|        crate::config::i18n::t("menu.toggle_devtools"),
+442|        true,
+443|        None::<&str>,
+444|    )?;
+445|    let task_manager = MenuItem::with_id(
+446|        app,
+447|        "desktop-task-manager",
+448|        crate::config::i18n::t("menu.task_manager"),
+449|        true,
+450|        None::<&str>,
+451|    )?;
+452|    let help_separator = PredefinedMenuItem::separator(app)?;
+453|    let documentation = MenuItem::with_id(
+454|        app,
+455|        "desktop-documentation",
+456|        crate::config::i18n::t("menu.documentation"),
+457|        true,
+458|        None::<&str>,
+459|    )?;
+460|    let keyboard_shortcuts = MenuItem::with_id(
+461|        app,
+462|        "desktop-keyboard-shortcuts",
+463|        crate::config::i18n::t("menu.keyboard_shortcuts"),
+464|        true,
+465|        None::<&str>,
+466|    )?;
+467|    let desktop_feedback = MenuItem::with_id(
+468|        app,
+469|        "desktop-feedback",
+470|        crate::config::i18n::t("menu.desktop_feedback"),
+471|        true,
+472|        None::<&str>,
+473|    )?;
+474|    let harness_feedback = MenuItem::with_id(
+475|        app,
+476|        "desktop-harness-feedback",
+477|        crate::config::i18n::t("menu.harness_feedback"),
+478|        true,
+479|        None::<&str>,
+480|    )?;
+481|    let feedback_separator = PredefinedMenuItem::separator(app)?;
+482|    let help_menu = Submenu::with_id_and_items(
+483|        app,
+484|        "desktop-help-menu",
+485|        crate::config::i18n::t("menu.help"),
+486|        true,
+487|        &[
+488|            &documentation,
+489|            &keyboard_shortcuts,
+490|            &help_separator,
+491|            &desktop_feedback,
+492|            &harness_feedback,
+493|            &feedback_separator,
+494|            &run_logs,
+495|            &toggle_devtools,
+496|            &task_manager,
+497|        ],
+498|    )?;
+499|
+500|    let new_window = MenuItem::with_id(
+501|        app,
+502|        "desktop-new-window",
+503|        crate::config::i18n::t("menu.new_window"),
+504|        true,
+505|        Some("CmdOrCtrl+N"),
+506|    )?;
+507|    let new_chat = MenuItem::with_id(
+508|        app,
+509|        "desktop-new-chat",
+510|        crate::config::i18n::t("menu.new_chat"),
+511|        true,
+512|        Some("CmdOrCtrl+Shift+N"),
+513|    )?;
+514|    let open_folder = MenuItem::with_id(
+515|        app,
+516|        "desktop-open-folder",
+517|        crate::config::i18n::t("menu.open_folder"),
+518|        true,
+519|        Some("CmdOrCtrl+O"),
+520|    )?;
+521|    let file_separator_close = PredefinedMenuItem::separator(app)?;
+522|    let close = PredefinedMenuItem::close_window(app, Some(&crate::config::i18n::t("menu.close")))?;
+523|    let file_menu = Submenu::with_id_and_items(
+524|        app,
+525|        "desktop-file-menu",
+526|        crate::config::i18n::t("menu.file"),
+527|        true,
+528|        &[
+529|            &new_window,
+530|            &new_chat,
+531|            &open_folder,
+532|            &file_separator_close,
+533|            &close,
+534|        ],
+535|    )?;
+536|
+537|    let undo = PredefinedMenuItem::undo(app, Some(&crate::config::i18n::t("menu.undo")))?;
+538|    let redo = PredefinedMenuItem::redo(app, Some(&crate::config::i18n::t("menu.redo")))?;
+539|    let edit_separator = PredefinedMenuItem::separator(app)?;
+540|    let cut = PredefinedMenuItem::cut(app, Some(&crate::config::i18n::t("menu.cut")))?;
+541|    let copy = PredefinedMenuItem::copy(app, Some(&crate::config::i18n::t("menu.copy")))?;
+542|    let paste = PredefinedMenuItem::paste(app, Some(&crate::config::i18n::t("menu.paste")))?;
+543|    let select_all =
+544|        PredefinedMenuItem::select_all(app, Some(&crate::config::i18n::t("menu.select_all")))?;
+545|    let edit_menu = Submenu::with_id_and_items(
+546|        app,
+547|        "desktop-edit-menu",
+548|        crate::config::i18n::t("menu.edit"),
+549|        true,
+550|        &[
+551|            &undo,
+552|            &redo,
+553|            &edit_separator,
+554|            &cut,
+555|            &copy,
+556|            &paste,
+557|            &select_all,
+558|        ],
+559|    )?;
+560|
+561|    let minimize =
+562|        PredefinedMenuItem::minimize(app, Some(&crate::config::i18n::t("menu.minimize")))?;
+563|    let zoom = PredefinedMenuItem::maximize(app, Some(&crate::config::i18n::t("menu.zoom")))?;
+564|    let window_separator = PredefinedMenuItem::separator(app)?;
+565|    let bring_all_to_front = PredefinedMenuItem::bring_all_to_front(
+566|        app,
+567|        Some(&crate::config::i18n::t("menu.bring_all_to_front")),
+568|    )?;
+569|    let window_menu = Submenu::with_id_and_items(
+570|        app,
+571|        "desktop-window-menu",
+572|        crate::config::i18n::t("menu.window"),
+573|        true,
+574|        &[&minimize, &zoom, &window_separator, &bring_all_to_front],
+575|    )?;
+576|
+577|    let menu = Menu::with_items(
+578|        app,
+579|        &[
+580|            &system_application_menu,
+581|            &file_menu,
+582|            &edit_menu,
+583|            &view_menu,
+584|            &run_menu,
+585|            &window_menu,
+586|            &help_menu,
+587|        ],
+588|    )?;
+589|    let _ = app.set_menu(menu)?;
+590|    window_menu.set_as_windows_menu_for_nsapp()?;
+591|    help_menu.set_as_help_menu_for_nsapp()?;
+592|    *MACOS_FULLSCREEN_MENU_ITEM
+593|        .get_or_init(|| Mutex::new(None))
+594|        .lock()
+595|        .unwrap_or_else(|error| error.into_inner()) = Some(fullscreen);
+596|    app.emit("macos-menu-rebuilt", ())?;
+597|    Ok(())
+598|}
+599|
+600|#[cfg(any(target_os = "macos", test))]
+601|fn fullscreen_menu_label_key(is_fullscreen: bool) -> &'static str {
+602|    if is_fullscreen {
+603|        "menu.exit_fullscreen"
+604|    } else {
+605|        "menu.enter_fullscreen"
+606|    }
+607|}
+608|
+609|fn help_menu_window_label<'a>(
+[revision=cbf29b9eae459a087aa52a856411806d7ebeba8b2ef340558fa05e5e743e8fff; more lines; nextOffset=610]
+[Notice: 2/2 requested ranges returned.]
+
+[assistant • ops_read_files]
+{"files":[{"path":"../deepseek-harness-desktop/src-tauri/src/lib.rs","offset":1,"limit":140},{"path":"../deepseek-harness-desktop/src-tauri/src/desktop/single_instance.rs","offset":1,"limit":160},{"path":"../deepseek-harness-desktop/src-tauri/src/desktop/builder.rs","offset":845,"limit":70},{"path":"../deepseek-harness-desktop/src-tauri/src/desktop/builder.rs","offset":1710,"limit":45},{"path":"../deepseek-harness-desktop/src-tauri/src/config/runtime.rs","offset":930,"limit":130},{"path":"../deepseek-harness-desktop/package.json","offset":1,"limit":155}]}
+
+[assistant • ops_bash]
+{"command":"ego-browser skill","description":"Load current native browser automation usage guide","timeoutMs":20000}
+
+[assistant • pwsh]
+{"description":"Inspect active desktop windows and display bounds","command":"Get-Process 'deepseek-harness-desktop','ego*' -ErrorAction SilentlyContinue | Select-Object Id,Path,MainWindowTitle; Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Screen]::AllScreens | Format-List DeviceName,Bounds,WorkingArea; Get-Item 'E:\\projects\\deepseek-harness-desktop\\dist\\index.html','E:\\projects\\deepseek-harness-desktop\\src-tauri\\target\\debug\\deepseek-harness-desktop.exe' | Select-Object FullName,LastWriteTime,Length"}
+
+[tool • ops_read_files]
+[Stored reference: refId=ref://session-7f84275b-f845-4e63-92cd-65c8ac229795/read_files/8dfd2371-7942-4c35-be79-826894d959f5; producerTool=read_files; totalItems=54; totalBytes=124773; referenceRoot=\\?\E:\projects\dsh-video. Page with ops_result; inspect source capture/coverage facts before claiming completeness.]
+=== FILE: E:\projects\deepseek-harness-desktop\src-tauri\src\lib.rs (Lines 1-140 of 268) ===
+[Notice: revision=f3dbcffaad6b336025d2cf5df2d835c052f5728fb8b69a4ebc7047c97a5d9702; bytes=14259; lineCount=268.]
+1 | mod bridge;
+2 | mod config;
+3 | pub mod desktop;
+4 | mod logger;
+5 | mod service;
+6 | mod utils;
+7 | 
+8 | #[cfg(target_os = "macos")]
+9 | use tauri::Manager;
+10 | 
+11 | /// 对显式给定的核心安装目录施加全套 dsh 补丁（`--patch-core <dir>` 的入口）。
+12 | ///
+13 | /// E2E 的插件 L2 直接起 `dsh web`，不经过桌面端启动路径；没有这一步，被测核心就缺少
+14 | /// 桌面端运行时会打上的补丁（鉴权、渲染器、会话、工作区等），断言的前提不成立。
+15 | /// 因此把补丁集暴露成一个不带 GUI 的入口，让编排复用同一份 Rust 实现，而不是另抄一份。
+16 | pub fn patch_core_dir(core_dir: &std::path::Path) -> Result<(), String> {
+17 |     service::patch::apply_all_at(core_dir)
+18 | }
+19 | 
+20 | /// 应用入口：先做 Wayland 环境兼容，再初始化日志、装配桌面端并进入事件循环。
+21 | pub fn run() -> Result<(), String> {
+22 |     let started = std::time::Instant::now();
+23 |     desktop::startup::verify()?;
+24 |     // Wayland EGL workaround：仅 AppImage 需要（见 `should_apply_wayland_egl_workaround`）。
+25 |     if should_apply_wayland_egl_workaround(
+26 |         &std::env::var("XDG_SESSION_TYPE").unwrap_or_default(),
+27 |         std::env::var_os("APPIMAGE").is_some(),
+28 |     ) {
+29 |         // 与 README 文档一致地同时关闭 compositing 与 DMABUF renderer：只关前者在部分
+30 |         // 发行版/驱动上仍会 SIGSEGV（issue #116 的 WebKitGTK 崩溃）。两个参数互相独立，
+31 |         // 用户已手动设置其中一个时只补齐另一个。
+32 |         let mut applied = Vec::new();
+33 |         if std::env::var("WEBKIT_DISABLE_COMPOSITING_MODE").is_err() {
+34 |             std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+35 |             applied.push("WEBKIT_DISABLE_COMPOSITING_MODE");
+36 |         }
+37 |         if std::env::var("WEBKIT_DISABLE_DMABUF_RENDERER").is_err() {
+38 |             std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
+39 |             applied.push("WEBKIT_DISABLE_DMABUF_RENDERER");
+40 |         }
+41 |         if !applied.is_empty() {
+42 |             // 此处在 logger::init() 之前执行，log 宏尚无 subscriber，用 eprintln 输出
+43 |             eprintln!("[wayland] set {} for WebKitGTK EGL", applied.join(" "));
+44 |         }
+45 |     }
+46 |     // 强制 XWayland（默认关闭的设置项，见 `should_force_xwayland`）。必须在此处执行：
+47 |     // GDK 只在初始化时读一次 GDK_BACKEND，建窗之后再改无效。
+48 |     let force_xwayland =
+49 |         config::force_xwayland_setting() || std::env::var_os("DSH_FORCE_XWAYLAND").is_some();
+50 |     if should_force_xwayland(
+51 |         force_xwayland,
+52 |         &std::env::var("WAYLAND_DISPLAY").unwrap_or_default(),
+53 |         &std::env::var("GDK_BACKEND").unwrap_or_default(),
+54 |         &std::env::var("DISPLAY").unwrap_or_default(),
+55 |     ) {
+56 |         std::env::set_var("GDK_BACKEND", "x11");
+57 |         // 同上，logger::init() 尚未执行，只能用 eprintln
+58 |         eprintln!("[wayland] set GDK_BACKEND=x11 so the pet window can stay on top (issue #649)");
+59 |     }
+60 |     // 初始化日志系统
+61 |     logger::init();
+62 |     log::info!(
+63 |         "STARTUP_BOOT: name=logger_ready elapsed_ms={}",
+64 |         started.elapsed().as_millis()
+65 |     );
+66 |     // Unix：把持久化的 DSH_HOME 补回进程环境（issue #871）。必须在桌面端装配之前，
+67 |     // 否则首次 get_dsh_data_path 会落到默认目录，日志、store 与 shim 全部写错位置。
+68 |     service::data_dir::restore_process_env();
+69 | 
+70 |     let mut context = tauri::generate_context!();
+71 |     if let Some(directory) = config::e2e_app_data_dir()? {
+72 |         context.config_mut().app.app_directories_override = Some(
+73 |             tauri::utils::config::AppDirectoriesOverride::Root(directory),
+74 |         );
+75 |     }
+76 |     log::info!(
+77 |         "STARTUP_BOOT: name=context_ready elapsed_ms={}",
+78 |         started.elapsed().as_millis()
+79 |     );
+80 |     #[cfg(all(windows, not(debug_assertions)))]
+81 |     let single_instance = match desktop::single_instance::claim(&context.config().identifier)? {
+82 |         Some(instance) => std::sync::Arc::new(instance),
+83 |         None => return Ok(()),
+84 |     };
+85 |     let startup = service::workflow::early::Startup::begin(
+86 |         &context,
+87 |         #[cfg(all(windows, not(debug_assertions)))]
+88 |         single_instance.clone(),
+89 |     );
+90 |     desktop::builder()
+91 |         .invoke_handler(desktop::handler())
+92 |         .build(context)
+93 |         .map_err(|error| format!("STARTUP_FAILED: {error}"))?
+94 |         .run(move |app_handle, event| match event {
+95 |             tauri::RunEvent::Ready => {
+96 |                 startup.attach(app_handle);
+97 |                 #[cfg(all(windows, not(debug_assertions)))]
+98 |                 if let Err(error) = single_instance.attach(app_handle) {
+99 |                     log::error!("SINGLE_INSTANCE_ATTACH_FAILED: {error}");
+100 |                     app_handle.exit(1);
+101 |                 }
+102 |             }
+103 |             #[cfg(target_os = "macos")]
+104 |             tauri::RunEvent::WindowEvent { event, .. } => {
+105 |                 desktop::builder::on_macos_titlebar_event(&event);
+106 |             }
+107 |             #[cfg(target_os = "macos")]
+108 |             tauri::RunEvent::MainEventsCleared => {
+109 |                 desktop::builder::sync_macos_titlebars(|| {
+110 |                     app_handle.webview_windows().into_values()
+111 |                 });
+112 |             }
+113 |             // macOS：关闭按钮只是隐藏窗口（见 builder 的 on_window_event），
+114 |             // 点击 Dock 图标时系统回调 applicationShouldHandleReopen 触发
+115 |             // RunEvent::Reopen，这里重新显示主窗口，否则窗口会一直隐藏在托盘。
+116 |             #[cfg(target_os = "macos")]
+117 |             tauri::RunEvent::Reopen { .. } => {
+118 |                 crate::utils::show_main_window(&app_handle);
+119 |             }
+120 |             // 正常退出请求发生在窗口销毁之前；此时主动保存一次主窗口几何，
+121 |             // 避免 Windows 最后一个移动/缩放事件尚未写入就退出而丢失尺寸。
+122 |             tauri::RunEvent::ExitRequested { .. } => {
+123 |                 config::save_main_window_geometry(app_handle);
+124 |             }
+125 |             // 退出时回收 Harness 进程：不回收的话，node 进程会在应用退出后
+126 |             // 残留并把原生模块 DLL（如 sharp 的 libvips-42.dll）锁在内存，
+127 |             // 下次启动重新解压时会失败（Windows os error 32）
+128 |             tauri::RunEvent::Exit => {
+129 |                 startup.shutdown();
+130 |                 // 进行中的插件安装子进程是独立进程组，父进程退出不会连带回收；
+131 |                 // 不显式结束就会留下占着档案 / pnpm store 的孤儿，让下一次启动
+132 |                 // 永久卡在安装阶段（且日志无任何输出）。必须先于其它收尾动作。
+133 |                 service::plugin::terminate_active_installs_blocking();
+134 |                 let setting = config::get_store_dat_setting(app_handle);
+135 |                 if setting.installed {
+136 |                     service::workflow::stop_on_exit(app_handle);
+137 |                 }
+138 |                 // 已下载但用户没在应用内安装过更新 → 退出后自动打开安装器：
+139 |                 // 静默下载不打扰用户，代价是用户可能一直不主动升级，这里补上
+140 |                 // 「关闭应用即升级」这一步（安装器由系统默认处理器启动）。
+[Notice: 140 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=141; omitted=128; total=268; matched=268; failed=0.]
+=== FILE: E:\projects\deepseek-harness-desktop\src-tauri\src\desktop\single_instance.rs (Lines 1-160 of 650) ===
+[Notice: revision=6d0b47c3dde452c8e1d211bcfa9016134452a37705055d3514e33b576b06ea2b; bytes=21214; lineCount=650.]
+1 | #![cfg(windows)]
+2 | 
+3 | use std::{
+4 |     ffi::c_void,
+5 |     os::windows::io::{FromRawHandle, OwnedHandle},
+6 |     ptr::{null, null_mut},
+7 |     sync::{mpsc, Arc, Mutex},
+8 |     thread::{self, JoinHandle},
+9 |     time::{Duration, Instant},
+10 | };
+11 | use tauri::{AppHandle, Manager};
+12 | use tauri_plugin_deep_link::DeepLink;
+13 | use windows_sys::Win32::{
+14 |     Foundation::{
+15 |         GetLastError, SetLastError, ERROR_ALREADY_EXISTS, HINSTANCE, HWND, LPARAM, LRESULT, WPARAM,
+16 |     },
+17 |     System::{LibraryLoader::GetModuleHandleW, Threading::CreateMutexW},
+18 |     UI::WindowsAndMessaging::{
+19 |         CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, FindWindowExW,
+20 |         GetClassLongW, GetMessageW, GetWindowLongPtrW, GetWindowLongW, GetWindowThreadProcessId,
+21 |         PostQuitMessage, SendMessageTimeoutW, SendMessageW, SetWindowLongPtrW, SetWindowLongW,
+22 |         UnregisterClassW, CREATESTRUCTW, GCL_CBWNDEXTRA, GWLP_USERDATA, MSG, SMTO_ABORTIFHUNG,
+23 |         SMTO_BLOCK, SMTO_ERRORONEXIT, WM_APP, WM_CLOSE, WM_COPYDATA, WM_NCCREATE, WM_NCDESTROY,
+24 |         WNDPROC, WS_EX_NOACTIVATE, WS_EX_TOOLWINDOW, WS_OVERLAPPED,
+25 |     },
+26 | };
+27 | 
+28 | const MESSAGE_TAG: usize = 1542;
+29 | const MAX_MESSAGE_BYTES: usize = 256 * 1024;
+30 | const SEND_TIMEOUT_MS: u32 = 5000;
+31 | const STOP_TARGET: u32 = WM_APP + 1;
+32 | 
+33 | // 直依赖未启用 Gdi/DataExchange；这里只声明协议所需的原生 ABI，不扩大 Cargo 特性。
+34 | #[repr(C)]
+35 | struct WindowClass {
+36 |     style: u32,
+37 |     procedure: WNDPROC,
+38 |     class_extra: i32,
+39 |     window_extra: i32,
+40 |     instance: HINSTANCE,
+41 |     icon: *mut c_void,
+42 |     cursor: *mut c_void,
+43 |     brush: *mut c_void,
+44 |     menu: *const u16,
+45 |     name: *const u16,
+46 | }
+47 | 
+48 | #[link(name = "user32")]
+49 | extern "system" {
+50 |     fn RegisterClassW(class: *const WindowClass) -> u16;
+51 | }
+52 | 
+53 | #[repr(C)]
+54 | struct CopyData {
+55 |     tag: usize,
+56 |     length: u32,
+57 |     data: *const c_void,
+58 | }
+59 | 
+60 | #[derive(Debug, PartialEq, Eq)]
+61 | struct Request {
+62 |     cwd: String,
+63 |     args: Vec<String>,
+64 | }
+65 | 
+66 | impl Request {
+67 |     fn parse(bytes: &[u8]) -> Option<Self> {
+68 |         let data = std::str::from_utf8(bytes.strip_suffix(&[0])?).ok()?;
+69 |         if data.contains('\\0') {
+70 |             return None;
+71 |         }
+72 |         let (cwd, args) = data.split_once('|')?;
+73 |         Some(Self {
+74 |             cwd: cwd.into(),
+75 |             args: args.split('|').map(str::to_owned).collect(),
+76 |         })
+77 |     }
+78 | 
+79 |     fn send(&self, target: HWND) -> Result<(), String> {
+80 |         let data = format!("{}|{}\\0", self.cwd, self.args.join("|"));
+81 |         if data.len() > MAX_MESSAGE_BYTES {
+82 |             return Err("SINGLE_INSTANCE_PAYLOAD_TOO_LARGE".into());
+83 |         }
+84 |         let copy = CopyData {
+85 |             tag: MESSAGE_TAG,
+86 |             length: data.len() as u32,
+87 |             data: data.as_ptr().cast(),
+88 |         };
+89 |         let mut accepted = 0;
+90 |         let sent = unsafe {
+91 |             SetLastError(0);
+92 |             SendMessageTimeoutW(
+93 |                 target,
+94 |                 WM_COPYDATA,
+95 |                 0,
+96 |                 &copy as *const _ as _,
+97 |                 SMTO_ABORTIFHUNG | SMTO_BLOCK | SMTO_ERRORONEXIT,
+98 |                 SEND_TIMEOUT_MS,
+99 |                 &mut accepted,
+100 |             )
+101 |         };
+102 |         if sent == 0 {
+103 |             return Err(win_error("SEND"));
+104 |         }
+105 |         if accepted == 0 {
+106 |             return Err("SINGLE_INSTANCE_REJECTED: target did not accept launch arguments".into());
+107 |         }
+108 |         Ok(())
+109 |     }
+110 | }
+111 | 
+112 | #[derive(Default)]
+113 | struct Inbox {
+114 |     app: Option<AppHandle>,
+115 |     pending: Vec<Request>,
+116 | }
+117 | 
+118 | fn dispatch(inbox: &Arc<Mutex<Inbox>>, app: &AppHandle) -> Result<(), String> {
+119 |     let inbox = Arc::clone(inbox);
+120 |     let handle = app.clone();
+121 |     app.run_on_main_thread(move || {
+122 |         let pending = std::mem::take(&mut inbox.lock().unwrap_or_else(|e| e.into_inner()).pending);
+123 |         for request in pending {
+124 |             if let Some(deep_link) = handle.try_state::<DeepLink<tauri::Wry>>() {
+125 |                 deep_link.handle_cli_arguments(request.args.iter());
+126 |             }
+127 |             crate::utils::show_main_window(&handle);
+128 |         }
+129 |     })
+130 |     .map_err(|error| format!("SINGLE_INSTANCE_DISPATCH_FAILED: {error}"))
+131 | }
+132 | 
+133 | struct NativeWindow {
+134 |     hwnd: HWND,
+135 |     class: Vec<u16>,
+136 |     module: HINSTANCE,
+137 |     inbox: Option<Box<Arc<Mutex<Inbox>>>>,
+138 | }
+139 | 
+140 | impl NativeWindow {
+141 |     fn create(identifier: &str, inbox: &Arc<Mutex<Inbox>>) -> Result<Self, String> {
+142 |         let class = wide(&format!("{identifier}-sic"));
+143 |         let name = wide(&format!("{identifier}-siw"));
+144 |         let module = unsafe { GetModuleHandleW(null()) };
+145 |         if module.is_null() {
+146 |             return Err(win_error("MODULE"));
+147 |         }
+148 |         let definition = WindowClass {
+149 |             style: 0,
+150 |             procedure: Some(window_proc),
+151 |             class_extra: 0,
+152 |             window_extra: 4,
+153 |             instance: module,
+154 |             icon: null_mut(),
+155 |             cursor: null_mut(),
+156 |             brush: null_mut(),
+157 |             menu: null(),
+158 |             name: class.as_ptr(),
+159 |         };
+160 |         if unsafe { RegisterClassW(&definition) } == 0 {
+[Notice: 160 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=161; omitted=490; total=650; matched=650; failed=0.]
+=== FILE: E:\projects\deepseek-harness-desktop\src-tauri\src\desktop\builder.rs (Lines 845-914 of 2035) ===
+[Notice: revision=cbf29b9eae459a087aa52a856411806d7ebeba8b2ef340558fa05e5e743e8fff; bytes=86076; lineCount=2035.]
+845 |         if SendMessageW(hwnd, WM_GETICON, ICON_BIG as usize, 0) == 0 {
+846 |             log::warn!("[icon] ICON_BIG still unset after registration");
+847 |         }
+848 |     }
+849 | }
+850 | 
+851 | fn with_shell_chrome<'a>(
+852 |     app: &'a tauri::AppHandle<Wry>,
+853 |     builder: WebviewWindowBuilder<'a, Wry, tauri::AppHandle<Wry>>,
+854 | ) -> tauri::Result<WebviewWindowBuilder<'a, Wry, tauri::AppHandle<Wry>>> {
+855 |     let appearance = crate::config::get_store_dat_setting(app).appearance;
+856 |     let transparent = appearance.transparency;
+857 |     let builder = builder
+858 |         .transparent(transparent)
+859 |         .initialization_script(format!(
+860 |             "window.__DSH_TRANSPARENT__ = {transparent}; window.__DSH_STORE_FILE__ = {};",
+861 |             serde_json::json!(crate::config::store_dat_file_name())
+862 |         ))
+863 |         // 启动期外观引导必须落在 document-start 且覆盖所有 frame：内嵌 dsh 的 boot 页
+864 |         // （HARNESS + Loading plugins…）由内核在插件加载之前绘出，晚于首绘的帧桥改不动它。
+865 |         .initialization_script_for_all_frames(crate::desktop::appearance::APPEARANCE_BOOTSTRAP_JS)
+866 |         .inner_size(1280.0, 840.0)
+867 |         .min_inner_size(860.0, 620.0)
+868 |         .resizable(true);
+869 | 
+870 |     #[cfg(any(windows, target_os = "macos"))]
+871 |     let builder = if appearance.native_blur_enabled() {
+872 |         builder.effects(
+873 |             tauri::window::EffectsBuilder::new()
+874 |                 .effects([
+875 |                     tauri::window::Effect::Acrylic,
+876 |                     tauri::window::Effect::Mica,
+877 |                     tauri::window::Effect::UnderWindowBackground,
+878 |                 ])
+879 |                 .state(tauri::window::EffectState::FollowsWindowActiveState)
+880 |                 .build(),
+881 |         )
+882 |     } else {
+883 |         builder
+884 |     };
+885 | 
+886 |     #[cfg(windows)]
+887 |     let builder = builder
+888 |         .data_directory(webview_data_directory(app))
+889 |         .additional_browser_args(WINDOWS_SHELL_BROWSER_ARGS)
+890 |         .icon(app.default_window_icon().unwrap().clone())?;
+891 | 
+892 |     #[cfg(target_os = "macos")]
+893 |     let builder = builder
+894 |         .decorations(true)
+895 |         .title_bar_style(tauri::TitleBarStyle::Overlay)
+896 |         .hidden_title(true)
+897 |         .traffic_light_position(tauri::LogicalPosition::new(
+898 |             TRAFFIC_LIGHT_INSET_X,
+899 |             f64::from(SHELL_NAV_HEIGHT) / 2.0 + TRAFFIC_LIGHT_VISUAL_OFFSET,
+900 |         ))
+901 |         .theme(match crate::config::get_dsh_theme(app) {
+902 |             crate::config::DshTheme::System => None,
+903 |             crate::config::DshTheme::Light => Some(tauri::Theme::Light),
+904 |             crate::config::DshTheme::Dark => Some(tauri::Theme::Dark),
+905 |         });
+906 | 
+907 |     #[cfg(not(target_os = "macos"))]
+908 |     let builder = builder.decorations(false);
+909 | 
+910 |     #[cfg(not(any(windows, target_os = "macos")))]
+911 |     let _ = app;
+912 | 
+913 |     Ok(builder)
+914 | }
+[Notice: 70 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=915; omitted=1121; total=2035; matched=2035; failed=0.]
+=== FILE: E:\projects\deepseek-harness-desktop\src-tauri\src\desktop\builder.rs (Lines 1710-1754 of 2035) ===
+[Notice: revision=cbf29b9eae459a087aa52a856411806d7ebeba8b2ef340558fa05e5e743e8fff; bytes=86076; lineCount=2035.]
+1710 |         }
+1711 |         if focused {
+1712 |             return Some(label);
+1713 |         }
+1714 |         if label == MAIN_WINDOW_LABEL {
+1715 |             main = Some(label);
+1716 |         }
+1717 |     }
+1718 |     main
+1719 | }
+1720 | 
+1721 | pub fn builder() -> tauri::Builder<tauri::Wry> {
+1722 |     let mut builder = tauri::Builder::default();
+1723 | 
+1724 |     // E2E：内嵌 WebDriver server 只在 E2E 进程装配（`@wdio/tauri-service` 拉起应用时注入
+1725 |     // TAURI_WEBDRIVER_PORT）。插件一旦注册就会无条件监听 127.0.0.1:4445，并接管每个 webview
+1726 |     // 的 script dialog（默认弹窗被禁用，转成等 WebDriver 应答、最长 30s 的 pending alert）；
+1727 |     // 正常 dev/release 会话既不该开这个端口，也不该动用户的弹窗与文件选择。
+1728 |     if crate::config::is_e2e_run() {
+1729 |         builder = builder.plugin(tauri_plugin_wdio_webdriver::init());
+1730 |     }
+1731 | 
+1732 |     let builder = builder
+1733 |         .manage(crate::desktop::pet_mouse::PetMouseStreamState::default())
+1734 |         .setup(|app| {
+1735 |             let app_handle = app.handle().clone();
+1736 |             crate::desktop::autostart::init(&app_handle)?;
+1737 |             // 首装检测必须最先执行：窗口几何恢复/退出保存等任何 store 写入都会
+1738 |             // 创建 store 文件，判定晚于它们会把首装误判为升级（见
+1739 |             // config::detect_first_install 的时序说明）。
+1740 |             crate::config::detect_first_install(&app_handle);
+1741 |             build_main_window(&app_handle)?;
+1742 |             // 菜单文案在构建时就取当前语言，语言初始化必须早于菜单/托盘构建。
+1743 |             let language = crate::config::get_store_dat_setting(&app_handle).language;
+1744 |             crate::config::i18n::set_language(crate::config::i18n::lang_from_setting(&language));
+1745 |             #[cfg(target_os = "macos")]
+1746 |             install_macos_menu(&app_handle)?;
+1747 |             tray(&app_handle)?;
+1748 |             // 桌宠窗口：按「是否启用」设置惰性创建/显示（幂等）。
+1749 |             crate::desktop::pet::init_pet_window(&app_handle);
+1750 |             setup(app_handle.clone());
+1751 |             // 方案 1（host → rust → pet）：Rust 作为宿主会话增量 SSE 流的消费者，
+1752 |             // 不再依赖 iframe 的 invoke 桥转发（#396 根因）。断连自动重连；
+1753 |             // 仅当桌宠已启用且可见才订阅——关闭桌宠则宿主不做任何转发。
+1754 |             crate::bridge::pet::sync_pet_session_stream(
+[Notice: 45 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=1755; omitted=281; total=2035; matched=2035; failed=0.]
+=== FILE: E:\projects\deepseek-harness-desktop\src-tauri\src\config\runtime.rs (Lines 930-1059 of 1231) ===
+[Notice: revision=c634d1f9748f7038b95f62734d5bfc2f0148178facd7c01107803a13ae04df45; bytes=46086; lineCount=1231.]
+930 |         let after = fs::metadata(&node).unwrap();
+931 |         assert_eq!(before.len(), after.len());
+932 |         assert_eq!(before.modified().unwrap(), after.modified().unwrap());
+933 |         fs::write(root.path().join("identity"), b"invalid JSON").unwrap();
+934 |         for version in ["22.19.0", "23.0.0"] {
+935 |             fs::write(root.path().join("version"), format!("v{version}\\n")).unwrap();
+936 |             assert_eq!(get_node_version_of_path(&node).as_deref(), Some(version));
+937 |         }
+938 |     }
+939 | 
+940 |     #[test]
+941 |     fn node_version_cache_requires_an_existing_matching_exec_path() {
+942 |         let root = tempfile::tempdir().unwrap();
+943 |         let node = root.path().join("node");
+944 |         fs::write(&node, b"fixture").unwrap();
+945 |         let cache = std::sync::Mutex::new(None);
+946 |         for actual in [None, Some(root.path().join("missing-node"))] {
+947 |             for version in ["22.19.0", "23.0.0"] {
+948 |                 assert_eq!(
+949 |                     cached_node_version(&node, &cache, || Some((version.into(), actual.clone()))),
+950 |                     Some(version.into())
+951 |                 );
+952 |             }
+953 |         }
+954 |     }
+955 | 
+956 |     #[test]
+957 |     fn node_version_cache_executes_the_actual_node_probe_once() {
+958 |         let candidate = find_local_node_binary().expect("Node.js required for version probe tests");
+959 |         let (_, actual) = probe_node_version(&candidate).expect("working Node.js required");
+960 |         let node = actual.expect("Node.js must expose its real executable path");
+961 |         let output = node_version_output(&node, &["--version"]).unwrap();
+962 |         assert!(output.status.success());
+963 |         let expected = String::from_utf8(output.stdout)
+964 |             .unwrap()
+965 |             .trim()
+966 |             .trim_start_matches('v')
+967 |             .to_string();
+968 |         let cache = std::sync::Mutex::new(None);
+969 |         let calls = std::cell::Cell::new(0);
+970 |         for _ in 0..3 {
+971 |             assert_eq!(
+972 |                 cached_node_version(&node, &cache, || {
+973 |                     calls.set(calls.get() + 1);
+974 |                     let result = probe_node_version(&node).unwrap();
+975 |                     assert_eq!(
+976 |                         dunce::canonicalize(result.1.as_ref().unwrap()).unwrap(),
+977 |                         dunce::canonicalize(&node).unwrap()
+978 |                     );
+979 |                     Some(result)
+980 |                 }),
+981 |                 Some(expected.clone())
+982 |             );
+983 |         }
+984 |         assert_eq!(calls.get(), 1);
+985 |     }
+986 | 
+987 |     #[test]
+988 |     fn node_version_cache_does_not_remember_failed_probes() {
+989 |         let root = tempfile::tempdir().unwrap();
+990 |         let node = root.path().join("node");
+991 |         fs::write(&node, b"fixture").unwrap();
+992 |         let cache = std::sync::Mutex::new(None);
+993 |         assert_eq!(cached_node_version(&node, &cache, || None), None);
+994 |         assert_eq!(
+995 |             cached_node_version(&node, &cache, || Some((
+996 |                 "24.0.0".into(),
+997 |                 Some(node.clone())
+998 |             ))),
+999 |             Some("24.0.0".into())
+1000 |         );
+1001 |         assert_eq!(
+1002 |             cached_node_version(&node, &cache, || panic!("success must be cached")),
+1003 |             Some("24.0.0".into())
+1004 |         );
+1005 |     }
+1006 | 
+1007 |     #[test]
+1008 |     fn node_version_cache_never_hits_when_file_identity_is_unavailable() {
+1009 |         let root = tempfile::tempdir().unwrap();
+1010 |         let node = root.path().join("node");
+1011 |         fs::write(&node, b"fixture").unwrap();
+1012 |         let cache = std::sync::Mutex::new(None);
+1013 |         assert_eq!(
+1014 |             cached_node_version(&node, &cache, || Some((
+1015 |                 "24.0.0".into(),
+1016 |                 Some(node.clone())
+1017 |             ))),
+1018 |             Some("24.0.0".into())
+1019 |         );
+1020 |         fs::remove_file(&node).unwrap();
+1021 |         for version in ["24.0.1", "24.0.2"] {
+1022 |             assert_eq!(
+1023 |                 cached_node_version(&node, &cache, || Some((version.into(), Some(node.clone())))),
+1024 |                 Some(version.into())
+1025 |             );
+1026 |         }
+1027 |         fs::create_dir(&node).unwrap();
+1028 |         for version in ["24.0.3", "24.0.4"] {
+1029 |             assert_eq!(
+1030 |                 cached_node_version(&node, &cache, || Some((version.into(), Some(node.clone())))),
+1031 |                 Some(version.into())
+1032 |             );
+1033 |         }
+1034 |     }
+1035 | 
+1036 |     /// 为文件布局测试生成互不冲突的临时目录。
+1037 |     fn unique_runtime_test_dir(name: &str) -> PathBuf {
+1038 |         use std::time::{SystemTime, UNIX_EPOCH};
+1039 | 
+1040 |         let nonce = SystemTime::now()
+1041 |             .duration_since(UNIX_EPOCH)
+1042 |             .expect("system time after epoch")
+1043 |             .as_nanos();
+1044 |         std::env::temp_dir().join(format!("dsh-runtime-{name}-{}-{nonce}", std::process::id()))
+1045 |     }
+1046 | 
+1047 |     /// 完整 Git 安装版把 HTTPS helper 直接放在 exec path 时仍应识别。
+1048 |     #[test]
+1049 |     fn git_https_helper_accepts_exec_path_layout() {
+1050 |         let root = unique_runtime_test_dir("git-exec-helper");
+1051 |         let exec_path = root.join("mingw64").join("libexec").join("git-core");
+1052 |         fs::create_dir_all(&exec_path).expect("create exec path");
+1053 |         fs::write(exec_path.join("git-remote-https.exe"), b"stub").expect("write helper");
+1054 | 
+1055 |         assert!(git_https_helper_exists(&exec_path));
+1056 | 
+1057 |         let _ = fs::remove_dir_all(root);
+1058 |     }
+1059 | 
+[Notice: 130 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=1060; omitted=172; total=1231; matched=1231; failed=0.]
+=== FILE: E:\projects\deepseek-harness-desktop\package.json (Lines 1-116 of 183) ===
+[Notice: revision=382d7f697b92e40810aec20f4ed42733272b98b2d1b78218a00a73cb9c075c15; bytes=8043; lineCount=183.]
+1 | {
+2 |   "name": "deepseek-harness-desktop",
+3 |   "type": "module",
+4 |   "version": "0.24.5",
+5 |   "private": true,
+6 |   "packageManager": "pnpm@11.7.0",
+7 |   "description": "Desktop application for DeepSeek Harness (dsh) — one-click local install and launch, no Node.js setup required.",
+8 |   "main": "./src-native/entry.ts",
+9 |   "scripts": {
+10 |     "dev": "vite",
+11 |     "dev:desktop": "pnpm dev:plugins & tauri dev",
+12 |     "dev:plugins": "pnpm --filter \\"./packages/*\\" -r --parallel run dev",
+13 |     "prebuild": "pnpm build:plugins",
+14 |     "build": "tsc && vite build",
+15 |     "build:plugins": "tsx scripts/build-plugins.ts",
+16 |     "build:taiwindcss": "tsx packages/dsh-tauri-ui/scripts/taiwindcss.ts",
+17 |     "build:debug": "tsx scripts/build-debug.ts",
+18 |     "genapi": "genapi",
+19 |     "preview": "vite preview",
+20 |     "tauri": "tauri",
+21 |     "release": "bumpp --pr",
+22 |     "test": "vitest",
+23 |     "test:unit": "vitest --project unit",
+24 |     "test:e2e:plugin": "vitest --project plugin",
+25 |     "test:e2e:desktop": "vitest --project desktop",
+26 |     "lint": "eslint",
+27 |     "lint:fix": "eslint . --fix",
+28 |     "typecheck": "tsc --project tsconfig.typecheck.json --noEmit",
+29 |     "icons": "tauri icon public/deepseek-harness-desktop-tauri.svg --output src-tauri/icons && tauri icon public/deepseek-harness-desktop-tauri-nightly.svg --output src-tauri/icons/nightly --ios-color \\"#000000\\" && tsx scripts/rebuild-macos-icon.ts",
+30 |     "dev:native": "expo start --dev-client",
+31 |     "android": "expo run:android",
+32 |     "ios": "expo run:ios",
+33 |     "build:native": "expo export --platform android --output-dir .temp/native-android-export",
+34 |     "build:ios": "expo export --platform ios --output-dir .temp/native-ios-export",
+35 |     "prebuild:native": "expo prebuild --platform android --no-install",
+36 |     "prebuild:ios": "expo prebuild --platform ios --no-install",
+37 |     "test:native": "vitest run --config vitest.native.config.ts",
+38 |     "typecheck:native": "tsc --project tsconfig.native.json --noEmit"
+39 |   },
+40 |   "dependencies": {
+41 |     "@choochmeque/tauri-plugin-notifications-api": "catalog:",
+42 |     "@genapi/pipeline": "catalog:",
+43 |     "@gravity-ui/icons": "catalog:runtime",
+44 |     "@heroui/react": "catalog:runtime",
+45 |     "@heroui/styles": "catalog:runtime",
+46 |     "@overlastic/react": "catalog:runtime",
+47 |     "@react-native-async-storage/async-storage": "catalog:native",
+48 |     "@reause/core": "catalog:runtime",
+49 |     "@tanstack/react-query": "catalog:runtime",
+50 |     "@tauri-apps/api": "catalog:tauri",
+51 |     "@tauri-apps/plugin-http": "catalog:tauri",
+52 |     "@tauri-apps/plugin-os": "catalog:",
+53 |     "@tauri-apps/plugin-store": "catalog:",
+54 |     "dsh-pet-component": "catalog:runtime",
+55 |     "expo": "catalog:native",
+56 |     "expo-blur": "catalog:native",
+57 |     "expo-build-properties": "catalog:native",
+58 |     "expo-camera": "catalog:native",
+59 |     "expo-constants": "catalog:native",
+60 |     "expo-crypto": "catalog:native",
+61 |     "expo-dev-client": "catalog:native",
+62 |     "expo-font": "catalog:native",
+63 |     "expo-linking": "catalog:native",
+64 |     "expo-localization": "catalog:native",
+65 |     "expo-network": "catalog:native",
+66 |     "expo-notifications": "catalog:native",
+67 |     "expo-router": "catalog:native",
+68 |     "expo-secure-store": "catalog:native",
+69 |     "expo-splash-screen": "catalog:native",
+70 |     "expo-status-bar": "catalog:native",
+71 |     "expo-system-ui": "catalog:native",
+72 |     "heroui-native": "catalog:native",
+73 |     "i18next": "catalog:runtime",
+74 |     "react": "catalog:runtime",
+75 |     "react-dom": "catalog:runtime",
+76 |     "react-i18next": "catalog:runtime",
+77 |     "react-if-lite": "catalog:runtime",
+78 |     "react-native": "catalog:native",
+79 |     "react-native-drawer-layout": "catalog:native",
+80 |     "react-native-gesture-handler": "catalog:native",
+81 |     "react-native-lucide": "catalog:",
+82 |     "react-native-reanimated": "catalog:native",
+83 |     "react-native-safe-area-context": "catalog:native",
+84 |     "react-native-screens": "catalog:native",
+85 |     "react-native-svg": "catalog:native",
+86 |     "react-native-webview": "catalog:native",
+87 |     "react-native-worklets": "catalog:native",
+88 |     "semver": "catalog:runtime",
+89 |     "tailwind-merge": "catalog:native",
+90 |     "tailwind-variants": "catalog:runtime",
+91 |     "tw-animate-css": "catalog:native",
+92 |     "uniwind": "catalog:native",
+93 |     "unstorage": "catalog:utils",
+94 |     "valtio-define": "catalog:runtime"
+95 |   },
+96 |   "devDependencies": {
+97 |     "@antfu/eslint-config": "catalog:lint",
+98 |     "@deepseek-ai/cordis": "catalog:dsh",
+99 |     "@deepseek-ai/cordis-plugin-group": "catalog:dsh",
+100 |     "@deepseek-ai/cordis-plugin-include": "catalog:dsh",
+101 |     "@deepseek-ai/cordis-plugin-loader": "catalog:dsh",
+102 |     "@deepseek-ai/dsh-agent": "catalog:dsh",
+103 |     "@deepseek-ai/dsh-agent-default-model": "catalog:dsh",
+104 |     "@deepseek-ai/dsh-agent-loop": "catalog:dsh",
+105 |     "@deepseek-ai/dsh-agent-preset": "catalog:dsh",
+106 |     "@deepseek-ai/dsh-agent-preset-registry": "catalog:dsh",
+107 |     "@deepseek-ai/dsh-api-session-controller": "catalog:dsh",
+108 |     "@deepseek-ai/dsh-api-workspace-controller": "catalog:dsh",
+109 |     "@deepseek-ai/dsh-client-connection": "catalog:dsh",
+110 |     "@deepseek-ai/dsh-client-locale": "catalog:dsh",
+111 |     "@deepseek-ai/dsh-client-store": "catalog:dsh",
+112 |     "@deepseek-ai/dsh-client-ui-conversation": "catalog:dsh",
+113 |     "@deepseek-ai/dsh-client-ui-layout": "catalog:dsh",
+114 |     "@deepseek-ai/dsh-client-ui-primitives": "catalog:dsh",
+115 |     "@deepseek-ai/dsh-client-ui-renderer": "catalog:dsh",
+116 |     "@deepseek-ai/dsh-client-ui-session": "catalog:dsh",
+[Notice: 116 items displayed; complete=false; TruncatedBy: worker-limit; nextOffset=117; omitted=67; total=183; matched=183; failed=0.]
+[Notice: 6 items displayed; complete=false; TruncatedBy: worker-limit; nextIndex=0; pending=6; omitted=6; total=6; matched=6; failed=0.]
+
+[tool • ops_bash]
+[ego-browser:skill] ego-browser usage guide v2.1.0
+
+# ego-browser
+
+Call `help()` or `help("page.click")` to print signatures and uncommon options
+of APIs named below; it prints by itself, so do not wrap it in `console.log`.
+For installation or connection problems, read `references/install.md` in the
+ego-browser Skill directory.
+
+## Run browser scripts
+
+Pass the script to `ego-browser nodejs`. The form depends on the shell that runs
+the command: heredoc is Bash/Zsh syntax and does not exist in PowerShell or cmd.
+
+### Bash, Zsh, Git Bash
+
+```bash
+ego-browser nodejs <<'EOF'
+const task = await taskSpace("inspect example page");
+const page = task.page("p1");
+await page.goto("https://example.com");
+
+console.log({ taskSpaceId: task.spaceId, page: page.label });
+console.log(await page.snapshot());
+EOF
+```
+
+When a sandbox blocks heredoc input, use `-e` instead. Use single quotes around
+the code and double quotes for JavaScript strings; single quotes within the code
+require shell quoting.
+
+```bash
+ego-browser nodejs -e '
+const task = await taskSpace("inspect example page");
+await task.page("p1").goto("https://example.com");
+console.log(task.spaceId);
+'
+```
+
+### PowerShell
+
+PowerShell has no heredoc, and Windows PowerShell 5.1 drops the double quotes
+inside an argument when it calls a native program, which splits the script into
+several arguments. Do not pass a script that contains double quotes or spans
+several lines to `-e`. Write it to a UTF-8 `.mjs` file instead and evaluate an
+ASCII-only one-line entry point, which needs no double quotes of its own:
+
+```powershell
+ego-browser nodejs -e "await import('file:///C:/Users/<name>/ego/task.mjs')"
+```
+
+The imported module runs with the same helpers and `console` as an inline
+script, so the whole task belongs in the `.mjs` file. Use forward slashes in the
+`file:///` URL. Non-ASCII content such as Chinese text must stay inside the
+file: never put it in a `-e` argument.
+
+Do not pipe the file in with `Get-Content`. Windows PowerShell 5.1 reads a UTF-8
+file as ANSI and sends ASCII to native programs, which corrupts non-ASCII text
+and truncates strings. PowerShell has no `<` input redirection either.
+
+### cmd
+
+cmd has no heredoc, but it does support input redirection, so it can run the
+same `.mjs` file directly:
+
+```bat
+ego-browser nodejs < C:\Users\<name>\ego\task.mjs
+```
+
+### Later rounds with a script file
+
+Each run is a new process, and earlier rounds have already run. Write a new,
+complete file for every round (`round-01.mjs`, `round-02.mjs`, ...) instead of
+editing the previous one, which would replay old steps. Keep one goal's files in
+a new directory named for the goal plus the date and time, such as
+`C:/Users/<name>/ego/laptop-prices-20260922-1405/`, and only run files written
+in this conversation. Create files with your file tool, not PowerShell
+`Set-Content`, `Out-File`, or `>`, which write ANSI or UTF-16 on 5.1.
+
+### When the script fails to parse
+
+`SyntaxError: await is only valid in async functions and the top level bodies of
+modules` almost always means the shell damaged the script before Node received
+it; top-level `await` itself is supported. Do not wrap the code in an async
+IIFE, open a new task space, or resend the same command. Switch to the `.mjs`
+file form above.
+
+The script always runs in Node.js, not in the web Page. Browser helpers and
+Node.js APIs belong in the script; Page globals such as `window`, `document`,
+`location`, and DOM APIs do not. Put browser-side JavaScript inside
+`page.evaluate()`. Do not import Playwright or launch another browser.
+
+The Node.js runtime uses ESM. When a script needs local files, load built-ins
+with dynamic imports such as `await import("node:fs/promises")`. The script
+does not run in your shell's working directory, so use absolute paths for every
+file it reads or writes. It also does not inherit your shell's environment
+variables: `process.env` will not contain values you set before running
+`ego-browser`, so write every input directly into the script.
+
+Ego-browser deliberately exposes a small custom API. It is not Playwright, even
+where method names and options look similar. Use only the TaskSpace, Page,
+FileChooser, mouse, and keyboard APIs explicitly listed in this Skill. Do not
+infer Playwright methods such as `locator()`, `getByRole()`, `context()`,
+`expect()`, or `route()`. When the listed API does not cover an operation, use
+the documented `page.evaluate()` or `page.cdp()` escape hatches instead of
+guessing another method.
+
+Only these pointer actions accept an optional `label` option: `click()`,
+`dblclick()`, `hover()`, `dragAndDrop()`, `mouse.click()`, `mouse.move()`, and
+`mouse.wheel()`. Pass a concise 3-6 word description to keep the action text
+next to the visible agent cursor in sync with the action. Other methods, such
+as `fill()`, `press()`, `focus()`, `selectOption()`, `waitForSelector()`,
+`keyboard.*()`, `mouse.down()`, and `mouse.up()`, reject a `label` option.
+The `label` in `selectOption(selector, { label })` is different: it selects the
+option whose visible text matches.
+
+When the user explicitly asks for ego-browser, start with a real browser command
+and diagnose the CLI or installation only if it fails.
+
+## Spaces, rounds, and pages
+
+- Use exactly one TaskSpace for the entire user goal. Create it once, print its
+  `spaceId`, and resume that same space in later rounds. Use multiple spaces
+  only when the user explicitly requests them.
+- Task space names are unique. `taskSpace(name)` resumes your own space with
+  that name instead of creating a second one. If the name belongs to a
+  user-owned space, it fails with `EGO_TASK_SPACE_NAME_IN_USE`: ask the user
+  whether to work in that space (then `claimTaskSpace(id)`), or pick another
+  name.
+- Never use a new TaskSpace to recover from a stuck, blocked, timed-out, or
+  unexpected Page. Recover within the existing space; if it cannot continue,
+  stop and ask the user.
+- Every invocation starts a new Node.js process. Task spaces, tabs, and Page labels
+  persist; JavaScript variables do not.
+- A new task space starts with Page `p1`; navigate it instead of opening
+  another Page.
+- Reuse a Page with `goto()` instead of opening a new Page for every URL.
+- All time values are milliseconds.
+
+```js
+// Later round: use the space id and Page label printed earlier.
+const resumed = await taskSpace(7);
+const source = resumed.page("p1");
+await source.goto("https://example.com/releases");
+```
+
+Do not inspect or select profiles unless the user explicitly requests a
+particular Ego Lite profile. A `profileId` applies only when creating a space;
+use `help("profiles")` for the exact workflow.
+
+Supported TaskSpace API:
+
+- State: `spaceId`, `name`, `ownership`, `page(label)`, `userPage()`
+- Pages: `await task.pages()`, `await task.tabs()`, `newPage()`,
+  `adopt(page, { as? })`, `release(label)`
+- Control: `waitForControl(options)`, `handOff()`, `finish({ keep })`
+- Advanced: `cdp(method, params, options)`
+
+Pages receive permanent labels such as `p1`, `p2`, and `p3`. Prefer these labels
+to custom `{ as }` values. Reuse or close Pages as the task proceeds; the runtime
+reports the configured Page budget when it is reached.
+
+`task.newPage()` creates another blank Page when multiple Pages must stay open.
+Navigate it separately with `page.goto()`.
+
+`task.page(label)` only refers to a Page that already exists; it never creates
+one, and its handle is always truthy, so `task.page("p2") || await task.newPage()`
+and `if (!page)` do not detect a missing label. Use labels printed by earlier
+output or by `await task.pages()`, and call `await task.newPage()` to create one.
+
+`await task.pages()` returns managed Pages. `await task.tabs()` returns every tab in the
+space as `{ label?, page, targetId, title, url, active, openedBy }`. A tab
+without a label is unmanaged; adopt it before operating:
+
+```js
+const active = (await task.tabs()).find((item) => item.active);
+if (active && !active.label) {
+  const page = await task.adopt(active.page);
+  console.log({ page: page.label, url: await page.url() });
+}
+```
+
+`release(label)` returns an unknown-origin Page to the user without closing its
+tab. Close Agent-created Pages with `page.close()`. Treat `openedBy: "unknown"`
+as user-owned when deciding whether a Page may be closed.
+
+## Page operations
+
+ego-browser provides the following Page API:
+
+- State and observation: `label`, `spaceId`, `openedBy`, `targetId`, `url()`,
+  `title()`, `info()`, `snapshot()`, `screenshot()`
+- Navigation and waits: `goto()`, `reload()`, `waitForURL()`,
+  `waitForEvent()`, `waitForSelector()`, `waitForLoadState()`,
+  `waitForFunction()`, `waitForTimeout()`
+- Elements: `click()`, `dblclick()`, `hover()`, `dragAndDrop()`, `fill()`,
+  `selectOption()`, `focus()`, `press()`, `setInputFiles()`,
+  `waitForFileChooser()`, `close()`
+- Dialogs: `acceptDialog(promptText?)`, `dismissDialog()`
+- Pointer: `mouse.click()`, `move()`, `down()`, `up()`, `wheel()`
+- Keyboard: `keyboard.down()`, `up()`, `press()`, `type()`, `insertText()`,
+  `paste()`
+- Page code and protocols: `evaluate(fnOrString, argument)`,
+  `fetch(url, options)`, `cdp(method, params, options)`
+
+`page.evaluate()` callbacks run only inside the Page; they cannot read variables
+or Node.js modules from the surrounding script. Define browser-side helpers
+inside the callback or pass one JSON-serializable value as its second argument.
+
+Work efficiently:
+
+- Each time you observe, collect only the cheapest page state sufficient to
+  choose the next action. Use a snapshot for semantic or locator ground truth
+  and a screenshot for visual confirmation; do not request both by default.
+- If an action does not produce the expected result, inspect the current page
+  before deciding whether to retry. Do not blindly repeat it or immediately
+  fall back to coordinates or raw CDP.
+- Once the page clearly shows the requested result, stop; do not confirm the
+  same result through multiple surfaces.
+
+### Semantic pages: snapshot and selectors
+
+Prefer snapshots and semantic selectors for ordinary DOM pages. Use screenshots
+and coordinates only when useful DOM semantics are unavailable.
+
+Before choosing an unfamiliar target, take a snapshot. When the current state
+is sufficient to plan several actions on the same Page, complete them in one
+script invocation, then observe the result once. Observe between actions only when an
+intermediate result changes what should happen next. Keep the action sequence,
+the wait for its final expected state, and the next snapshot in the same
+script invocation. Print the snapshot last so the next round can act on it directly.
+The final snapshot is the next round's starting view of the changed page;
+without it, that round usually has to spend a separate browser call observing
+before it can choose the next target, which wastes compute.
+
+Wait for the expected result: use `waitForURL()` for navigation,
+`waitForSelector()` for element state, or `waitForFunction()` for application
+state. Avoid fixed delays when an observable condition exists. A snapshot
+captures the current moment; it does not wait for the page to become stable.
+`page.snapshot()` captures the current viewport. For content outside it, use
+`page.snapshot({ scope: "full_page" })`.
+
+The default viewport snapshot includes visible iframe content returned by the
+browser. To focus on a frame's subtree, reuse the ref printed on its `iframe`
+line:
+
+```js
+console.log(await page.snapshot({ scope: "subtree", root: "@12" }));
+```
+
+Use the refs returned by the subtree for actions inside the iframe. A subtree
+snapshot does not scope later locator actions; they still prefer actionable
+matches in the top document before searching frames.
+
+`waitForLoadState()` defaults to `load`. `waitForFunction()` follows the
+Playwright argument order; pass `undefined` before options when there is no Page
+argument:
+
+```js
+await page.waitForFunction(() => window.appReady, undefined, {
+  timeout: 10_000,
+});
+```
+
+```js
+// Round 1: inspect and choose targets from this output.
+const page = task.page("p1");
+console.log(await page.snapshot());
+```
+
+```js
+// Next round: act using the previous output, verify, then prepare the next round.
+const page = task.page("p1");
+await page.fill("@21", "user@example.com");
+await page.click("loc=role:button[name='Sign in']");
+await page.waitForSelector("loc=css:#account-home", { state: "visible" });
+console.log(await page.snapshot());
+```
+
+Element actions accept:
+
+- snapshot refs such as `@21` or `ref=21`
+- `text=...` for page content
+- `loc=css:`, `loc=role:`, and `loc=href:` locators
+- `xpath=...`
+- raw CSS selectors
+
+Selector actions require exactly one match. Unquoted text normalizes whitespace,
+ignores case, and matches a substring; quoted text such as
+`text="Save changes"` is exact and case-sensitive.
+
+A small Playwright-compatible selector subset is also accepted: `css=...`,
+terminal `:has-text("...")` and `:text-is("...")`, `>> nth=N` after a CSS,
+text, or href selector (`N` is `-1` or non-negative), plus
+`loc=role:...[name*="..."]` for accessible-name substrings. Other Playwright
+selector syntax is not supported.
+
+When a selector identifies a wrapper, `focus()` and `press()` may use its
+interactive ancestor or unique editable descendant; `fill()` and
+`setInputFiles()` only continue to a unique compatible control.
+
+`click()`, `fill()`, `hover()`, and `dragAndDrop()` automatically bring their
+target into view with browser wheel input. Do not pre-scroll solely to make a
+DOM target actionable.
+
+Snapshot node names are accessibility roles. Use a ref now or `loc=...` to find
+the element again. After the page changes, take a new snapshot. When a useful
+node has no ref, construct a selector from its role, text, or surrounding
+context. CSS searches nested open shadow roots. Actions use an actionable match
+in the top document first, then search frames when the top document has none.
+Multiple actionable matches in the selected document or frame are ambiguous.
+
+Select options by value, visible label, or zero-based index. A string matches
+either value or label; pass an array for a multiple select:
+
+```js
+await page.selectOption("select[name=month]", { label: "October" });
+```
+
+Pass `null` or `[]` to clear the current selection.
+
+### Visual pages: screenshot, mouse, and keyboard
+
+Use a screenshot with mouse and keyboard operations for canvas, rich-text,
+spreadsheets, maps, and other interfaces that lack useful DOM semantics:
+
+```js
+const path = await page.screenshot({ path: "/absolute/path/before.png" });
+await page.mouse.click(420, 260, { label: "open spreadsheet cell" });
+await page.mouse.wheel(0, 600, { label: "scroll project board" });
+await page.keyboard.paste("hello\tworld");
+console.log({ screenshot: path });
+```
+
+`path` must be absolute; relative paths are rejected. Omit `path` to write
+into the system temporary directory and use the returned file path. On
+Windows, write paths with forward slashes, such as
+`C:/Users/<name>/ego-shots/before.png`, because backslashes are escape
+characters inside JavaScript strings.
+
+Inspect the screenshot with an image-viewing tool. Coordinates use CSS pixels;
+keyboard names and `+`-separated chords follow Playwright syntax. Use
+`ControlOrMeta` for portable shortcuts and verify the resulting page state.
+`mouse.wheel()` performs a short wheel-input motion at the current mouse
+position and resolves when that motion completes. In each script invocation, move or
+click over the intended scrollable area before using it.
+
+On macOS and Windows, `keyboard.paste()` sends the native paste shortcut and
+then restores the user's clipboard. Pass `{ text, html }` when a rich editor
+needs structured clipboard content; `text` is the plain-text fallback. On other
+platforms, use `keyboard.insertText()` for plain text.
+
+```js
+await page.keyboard.paste({
+  text: "Name\tStatus",
+  html: "<table><tr><td>Name</td><td>Status</td></tr></table>",
+});
+```
+
+For rich-text editors and editable grids, validate a small edit before repeating
+it at scale. Canvas-backed editors may not expose visible content through DOM
+text or selectors; verify those results with a screenshot or an
+application-specific visible state.
+
+### Page JavaScript and CDP
+
+Use `page.evaluate()` for bulk extraction or complex in-page work. It accepts
+one JSON-serializable argument and returns a JSON-serializable value:
+
+```js
+const rows = await page.evaluate(
+  ({ selector, limit }) =>
+    [...document.querySelectorAll(selector)].slice(0, limit).map((node) => ({
+      text: node.textContent?.trim(),
+      href: node.querySelector("a")?.href,
+    })),
+  { selector: "article", limit: 20 },
+);
+```
+
+`page.evaluate()` has no timeout option. Keep long work in bounded calls; on a
+safety timeout, use `executionStopped` and `mayHaveLateEffects` to decide
+whether an unsafe follow-up requires reloading or closing the Page first.
+
+Use documented Page methods first. If a wrapper is missing or does not work
+reliably on the current page, use `page.cdp()` as a lower-level path for
+diagnosis or control. It accepts Page, Runtime, DOM, Network, Input, and similar
+commands; use `task.cdp()` for Target and Browser commands. Raw CDP invalidates
+refs. Do not persist `page.targetId` across rounds.
+
+## Action receipts, popups, and dialogs
+
+When an action is expected to open a new Page, start the wait before the action:
+
+```js
+const popupPromise = page.waitForEvent("popup");
+await page.click('a[target="_blank"]');
+const popupPage = await popupPromise;
+await popupPage.waitForLoadState();
+```
+
+High-level actions also report immediately observed popups in `receipt.popups`
+as `{ label, targetId }`. Resolve the Page with
+`task.page(receipt.popups[0].label)` and continue there; wait for its URL when
+the destination matters.
+
+For uncommon protocol-event workflows, `await page.events()` returns and clears
+the buffered event array; it is not an EventEmitter.
+
+A synchronous JavaScript dialog may appear as `receipt.dialog` or in
+`page.info()`. Handle it before continuing:
+
+```js
+await page.acceptDialog("prompt response");
+// Or: await page.dismissDialog();
+```
+
+A receipt describes only the dispatched action and immediate popup or dialog
+observations; it does not verify the resulting application state.
+
+## Files and requests
+
+Set an existing file input with absolute paths:
+
+```js
+await page.setInputFiles("input[type=file]", ["/absolute/path/report.pdf"]);
+```
+
+If a click creates the file input, start waiting before the click:
+
+```js
+const chooserPromise = page.waitForFileChooser({ timeout: 10_000 });
+await page.click("button.upload");
+const chooser = await chooserPromise;
+const result = await chooser.setFiles("/absolute/path/report.pdf");
+```
+
+An upload-triggered JavaScript dialog may be returned as `result.dialog`; when
+present, handle it with the dialog methods above.
+
+For a browser download, arm the event before the triggering action and save the
+returned artifact to an absolute path in the same script:
+
+```js
+const downloadPromise = page.waitForEvent("download", { timeout: 30_000 });
+await page.click("button.download");
+const download = await downloadPromise;
+console.log({
+  url: download.url(),
+  suggestedFilename: download.suggestedFilename(),
+});
+await download.saveAs("/absolute/path/report.pdf");
+```
+
+`download.saveAs()` waits for completion and creates missing parent
+directories. `download.path()` returns the round-local temporary file;
+`failure()`, `cancel()`, and `delete()` manage its lifecycle. Temporary download
+files are removed when the SDK round is disposed, so call `saveAs()` before the
+script ends. Do not set a global download directory with raw CDP; each download
+wait configures and restores only the addressed Page session.
+
+`page.fetch()` runs `window.fetch()` in the Page: relative URLs, cookies, and
+service workers use that Page, and browser CORS still applies. It returns
+`{ ok, status, statusText, url, headers, body }`:
+
+```js
+const response = await page.fetch("/api/items", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ limit: 20 }),
+  timeout: 10_000,
+});
+```
+
+Save binary responses without converting them to text:
+
+```js
+await page.fetch("/image.png", { saveAs: "/absolute/path/image.png" });
+```
+
+Use standard Node.js `fetch()` for background requests that do not need Page
+browser semantics.
+
+## User control and completion
+
+Stop when the user takes control or the space is inactive or unassigned. Do not
+retry or route around the stop. Permission prompts, device choosers, and
+other browser-owned prompts require the user to handle them.
+
+When the user must act in the browser, call `await task.handOff()`, end the
+round, and explain what they should do. After the user confirms, resume the
+same space:
+
+```js
+const task = await takeOverTaskSpace(7);
+const userPage = task.userPage();
+```
+
+Adopt `userPage` if it is unmanaged. Use `waitForControl()` only when the current
+script must wait in place. Claim a user-owned or inactive space only when the
+user explicitly asks; this includes a space you finished with kept Pages, which
+`takeOverTaskSpace()` cannot resume. Find its numeric id first; names may be
+duplicated. `listTaskSpaces()` entries expose that id as `id` (`spaceId` exists
+only on a TaskSpace handle), so pass `entry.id` to `claimTaskSpace()` or
+`taskSpace()`:
+
+```js
+const spaces = await listTaskSpaces();
+console.log(spaces.filter((space) => space.ownership === "user"));
+
+const task = await claimTaskSpace(7);
+const userPage = task.userPage();
+```
+
+When the task succeeds, close the TaskSpace by default with
+`await task.finish({ keep: [] })`. Call `finish()` exactly once and wait for it
+to resolve before reporting completion.
+
+`finish()` ends the task and all of its Page labels, including Pages kept for the
+user. Put it last in the final round only; do not operate any Page after it in
+the same script or in later rounds.
+
+Keeping Pages is a rare exception: retain only necessary Pages when the user
+explicitly asks, or when the result must remain in the browser for the user to
+view or continue working with. Pages merely visited, search results, and
+intermediate steps do not need to remain open.
+
+```js
+await task.finish({ keep: [] }); // Default: keep no Agent-managed Pages.
+await task.finish({ keep: ["p2"] }); // Exception: keep only the result Page for the user.
+```
+
+User-created and unmanaged tabs are protected; if any remain, `keep: []` does
+not close the whole space. Do not close unwanted Pages one by one at completion;
+list the Pages to keep instead.
+Use `page.close()` only while the task is still in progress. Do not call
+`finish()` when the task stops for user control or an error.
+
+If the final output contains `[ego-browser:notice]`, finish the current browser
+task, tell the user an Ego Lite update is available, and run
+`ego-browser upgrade` only with their approval. Run `ego-browser skill` again
+after the upgrade.
+
+## Clearing cookies, cache, and storage
+
+Before clearing any cookie, cache, or storage, read
+`references/clearing-state.md` in the ego-browser Skill directory. Some clears
+reach the whole browser profile.
+
+[ego-browser:skill] end of guide v2.1.0
+
+[exit code: 0]
+
+[tool • pwsh]
+
+   Id Path                                                     MainWindowTitle
+   -- ----                                                     ---------------
+23200 G:\Deepseek Harness Desktop\deepseek-harness-desktop.exe Deepseek Harness Pet
+ 2600 C:\Program Files\Citro Labs\ego lite\Application\ego.exe Film / dsh-video - Remotion Studio - ego
+18324 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+19276 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+20260 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+20440 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+22052 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+22592 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+23724 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+28880 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+29488 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+30768 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+31104 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+32340 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+32444 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+34256 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+37292 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+37372 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+37620 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+42896 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+44196 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+44376 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+45872 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+46596 C:\Program Files\Citro Labs\ego lite\Application\ego.exe 
+
+
+DeviceName  : \\.\DISPLAY1
+Bounds      : {X=0,Y=0,Width=3840,Height=2160}
+WorkingArea : {X=0,Y=0,Width=3840,Height=2088}
+
+
+FullName                                                                                 LastWriteTime         Length
+--------                                                                                 -------------         ------
+E:\projects\deepseek-harness-desktop\dist\index.html                                     2026/10/16 7:56:55       563
+E:\projects\deepseek-harness-desktop\src-tauri\target\debug\deepseek-harness-desktop.exe 2026/10/18 15:36:42 47492608
+
+
+
+[assistant]
+<acp tokens="62" type="text">m00783</acp>
+本机桌面程序是 v0.25.0，但现有调试程序较旧。我会重新构建独立的调试实例，使用它已有的数据和窗口隔离机制；片中版本号按实际录制版本填写。
+
+
+[assistant • ops_read_files]
+{"files":[{"path":"../deepseek-harness-desktop/scripts/build-debug.ts","offset":1,"limit":200},{"path":"../deepseek-harness-desktop/docs/specs/devlopment.md","offset":1,"limit":160},{"path":"../deepseek-harness-desktop/docs/specs/desktop.baisc.md","offset":1,"limit":125},{"path":"../deepseek-harness-desktop/src-tauri/tauri.conf.json","offset":1,"limit":110}]}
+
+[assistant • skill]
+{"name":"pnpm"}
+
+[assistant • skill]
+{"name":"vite"}
+
+[assistant • ops_bash]
+{"command":"rg -n 'get_dsh_data_path|DSH_HOME|is_e2e_run' ../deepseek-harness-desktop/src-tauri/src/config/runtime.rs ../deepseek-harness-desktop/src-tauri/src/service/data_dir.rs ../deepseek-harness-desktop/src-tauri/src/desktop/autostart.rs && rg -n 'DSH_E2E|TAURI_WEBDRIVER_PORT|DSH_DOWNLOAD_CACHE|core-021|credential|\\.dsh' C:/Users/hairy/AppData/Local/Temp/acp-decompress-b12-1792779536439.txt | head -50","description":"Find isolation details and previous runtime findings"}
+
+[assistant • job_list]
+{}
+
+[tool • ops_read_files]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\scripts\\build-debug.ts" (Lines 1-56 of 56) ===
+1|/**
+2| * 产出桌面端 L3 E2E 的运行前置：根 `dist/` + 内嵌前端的 debug 二进制。
+3| *
+4| * 与 `.github/workflows/ci.yml` 的 `desktop-e2e` 作业同口径：
+5| * `build:plugins` → `vite build` → `tauri build --debug --no-bundle`
+6| * （临时 config 清空 `beforeBuildCommand`，避免重复触发 `pnpm build`）。
+7| *
+8| * 用法：`pnpm build:debug [--skip-plugins]`
+9| */
+10|
+11|import { spawnSync } from 'node:child_process'
+12|import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+13|import { tmpdir } from 'node:os'
+14|import { join, resolve } from 'node:path'
+15|import process from 'node:process'
+16|
+17|const REPO_ROOT = resolve(import.meta.dirname, '..')
+18|const SKIP_PLUGINS = process.argv.includes('--skip-plugins')
+19|
+20|function quote(value: string): string {
+21|  return /\\s/.test(value) ? `"${value}"` : value
+22|}
+23|
+24|function run(label: string, args: readonly string[]): void {
+25|  // Windows 上 `pnpm` 是 `pnpm.cmd`，不走 shell 会 ENOENT；走 shell 时把参数拼成单条
+26|  // 命令串（`spawnSync` 的 args 数组 + shell 会触发 DEP0190）。
+27|  const command = `pnpm ${args.map(quote).join(' ')}`
+28|  console.log(`\\n[build:debug] ${label}：${command}`)
+29|  const result = spawnSync(command, { cwd: REPO_ROOT, stdio: 'inherit', shell: true })
+30|  if (result.error !== undefined)
+31|    throw new Error(`${label} 无法启动：${result.error.message}`)
+32|  if (result.status !== 0)
+33|    throw new Error(`${label} 失败（exit ${result.status}）`)
+34|}
+35|
+36|if (SKIP_PLUGINS) {
+37|  console.log('[build:debug] 跳过 build:plugins（--skip-plugins）')
+38|}
+39|else {
+40|  run('构建插件产物', ['build:plugins'])
+41|}
+42|
+43|run('构建前端产物', ['exec', 'vite', 'build'])
+44|
+45|const configDir = mkdtempSync(join(tmpdir(), 'dsh-tauri-e2e-'))
+46|const configPath = join(configDir, 'tauri-e2e.json')
+47|writeFileSync(configPath, '{"build":{"beforeBuildCommand":""}}', 'utf8')
+48|
+49|try {
+50|  run('构建 debug 二进制', ['tauri', 'build', '--debug', '--no-bundle', '--config', configPath])
+51|}
+52|finally {
+53|  rmSync(configDir, { recursive: true, force: true })
+54|}
+55|
+56|console.log('\\n[build:debug] 完成：dist/ 与 src-tauri/target/debug/deepseek-harness-desktop.exe 已就绪')
+[revision=d372dce0b6073e3e6e02757cfcc7e198f723552ae27c812524ce3d2b1cf8cf4a; end of file; complete=true]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\docs\\specs\\devlopment.md" (Lines 1-46 of 46) ===
+1|> 该文档已被固定，禁止修改
+2|
+3|### 通用软件开发协议 (速查手册版)
+4|
+5|#### 1. 架构与状态 (Architecture & SSOT)
+6|
+7|* **唯一真值 (SSOT)**：数据/状态仅保留一份权威来源。禁止本地副本，写操作单点收口，读操作只读/订阅。
+8|* **零中间层**：仅有单一消费者的文件/Hook/Util/封装层，必须**强行内联**至调用处。
+9|* **激进重构**：重构即彻底删除/替换，严禁保留 `_legacy` 或废弃存根文件；重命名优先使用 `git mv` 保留历史。
+10|* **事故防御**：非显而易见的兼容代码/边缘处理，必须标注 `issue #xxx` 或阐明 *Why*（事故背景）。
+11|
+12|#### 2. 副作用与通信 (Effects & IPC)
+13|
+14|* **声明式副作用**：组件内严禁裸写原生副作用（如 `useEffect`/`watch`）；状态变更与订阅统一使用声明式 API/Hooks。
+15|* **命令式白名单**：仅当显式注册/销毁外部资源（原生窗口、网络取消等）时允许使用命令式副作用，且必须注释标记：`// keep:effect <原因>`。
+16|* **跨边界 IPC**：通信 API 需白名单化；来源校验（Origin Check）在入口处**一次性**完成；让位标记（Bridge Override）必须精确到具体命令/事件粒度。
+17|
+18|#### 3. 目录落位决策树 (Directory Allocation)
+19|
+20|```text
+21|代码逻辑判定
+22|├─ 仅单一 Store 使用      ➔ 归属于该 Store 模块目录下
+23|├─ 纯 UI / 无业务语义     ➔ components/ (基础 UI 库)
+24|├─ 依赖业务状态 / 领域数据 ➔ ui/<特定业务领域>/
+25|├─ 无状态 / 纯逻辑计算   ➔ utils/ (全局工具库，严禁放杂货)
+26|└─ 可复用组件状态 / 逻辑  ➔ hooks/
+27|
+28|```
+29|
+30|#### 4. 平台与 UI 机制 (Platform & UI)
+31|
+32|* **跨端写回**：跨进程/语言共享数据时，写回操作必须发生在**完整 Hydration（反序列化初始化）之后**。
+33|* **双端校验**：写入侧（前端）进行数据归一化，读取侧（后端/Native）进行兜底校验。
+34|* **前置拦截**：平台限制与版本差异必须在**调用发起前**同步拦截，严禁依赖 Try-Catch 捕获失败。
+35|* **提示单出处**：遵循“**谁执行，谁提示**”，禁止在上层函数重复弹窗/Toast。
+36|
+37|#### 5. 交付前自检清单 (Pre-Commit Checklist)
+38|
+39|1. **[ ] 真值**：数据来源是否唯一？
+40|2. **[ ] 收敛**：是否存在单消费者的中间层/文件？（若有，内联）
+41|3. **[ ] 目录**：文件落点是否符合决策树？
+42|4. **[ ] 副作用**：原生副作用是否已标记 `// keep:effect <原因>`？
+43|5. **[ ] 遗留**：是否无废弃符号/旧文件残留？
+44|6. **[ ] 验证**：Typecheck / Lint / Build 是否全部零 Error 通过？
+45|
+46|---
+[revision=109b91d4791ffa96dd0be5bc0067a4fcf00395c3bbd95a13d1da377b0982d2cd; end of file; complete=true]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\docs\\specs\\desktop.baisc.md" (Lines 1-125 of 183) ===
+1|> 该文档已被固定，禁止修改
+2|
+3|# DeepSeek Harness Desktop 开发规范文档
+4|
+5|> **架构概览**：基于 Tauri 2 + React 19，内嵌服务运行于 `[http://127.0.0.1:3080](http://127.0.0.1:3080)` (Debug 环境默认 `3081`)。
+6|
+7|---
+8|
+9|## 1. 技术栈与常用命令 (Tech Stack & Commands)
+10|
+11|* **前端**：React 19, TypeScript, Tailwind CSS v4, Vite (`src/`)
+12|* **后端**：Rust, Tauri v2 (`src-tauri/`)
+13|* **开发命令**：
+14|```bash
+15|pnpm install && pnpm dev    # 前端开发
+16|pnpm typecheck              # 前端 TS 类型检查 (改动前端后必跑)
+17|pnpm tauri dev              # 桌面端完整 Debug 模式
+18|cargo check && cargo test   # Rust 检查与单元测试 (src-tauri 目录下)
+19|
+20|```
+21|
+22|---
+23|
+24|## 2. 核心架构设计原则 (Architecture Principles)
+25|
+26|* **端口与数据隔离**：
+27|* **端口**：Release 默认 `3080`；Debug 默认 `3081`（通过 `cfg!(debug_assertions)` 隔离，防止端口争用）。
+28|* **数据**：Debug 环境数据目录为 `~/.dsh.dev`，Store 文件为 `.store.dev.dat`。Debug 下 `terminate_stale_harness_processes` 为 no-op，改用 `.dsh.dev/.harness.pid` 精确回收进程，且不执行旧数据迁移与 PATH 注册。
+29|
+30|* **内置插件宿主依赖边界**：
+31|* `packages/*/src/host/` 运行于独立的 `resources/node_modules`。
+32|* **禁止**静态引用任何 `@deepseek-ai/*` 运行时包（如 `import`/`require`），仅允许 `type-only import`。
+33|* 必须通过宿主上下文 `loader.import()` 解析模块，并按需使用 `loader.unwrapExports()`。
+34|
+35|* **Windows 极简模式**：
+36|* DSH 0.1.0-rc.8 起官方运行时内置 Windows process inspector，桌面端不再安装或挂载社区注入插件。
+37|* 启动时幂等剥离历史遗留的 `dsh-win-terminal-inspector` 注入行（`cordis.patch.yml`）。
+38|* Git Bash 的 bin 目录（`<git>\\bin` 与 `<git>\\usr\\bin`）注入服务 PATH。
+39|
+40|* **桌宠模块 (`src/pet` + `dsh-tauri-pet`)**：
+41|* 预设宠物**不下载不安装**，由 `preset-pets.json` 登记远端 URL 并直连播放，落 IndexedDB 缓存。
+42|* `src/pet/main.tsx` 使用 `@tauri-apps/plugin-http` 的 `fetch` 实现绕过 CORS。
+43|* macOS 自动使用 `.mov` (HEVC-alpha) 格式。
+44|
+45|---
+46|
+47|## 3. 前端编码规范 (Frontend Specifications)
+48|
+49|### 3.1 编码基础与函数声明 (Basics & Function Syntax)
+50|
+51|* **组件与函数声明**：命名函数必须使用 `function` 关键字，箭头函数仅用于回调参数。
+52|```tsx
+53|// ✅ 正确
+54|function UserProfile() {
+55|  function handleSave() { /* ... */ }
+56|  return <button onClick={handleSave}>Save</button>;
+57|}
+58|
+59|// ✅ 正确：回调中使用箭头函数
+60|useQuery({ queryFn: async () => fetchData() });
+61|
+62|```
+63|
+64|* **自动记忆化**：已接入 `react-compiler`（target 19），**禁止使用** `useCallback` / `useMemo`。
+65|* **UI 组件优先**：优先使用 `src/components` 和 HeroUI 组件，减少自定义 CSS 类。
+66|* **i18n 规范**：禁止硬编码字符串。key 必须拍平（扁平点号命名，如 `setting.title`），同步维护 `src/i18n/locales/en-US.json` 与 `zh-CN.json`。
+67|
+68|### 3.2 Hooks 使用指南 (`@reause/core`)
+69|
+70|壳层副作用**统一使用 `@reause/core**`。已移除 `react-use` 与 `@hairy/react-lib`，禁止引入。
+71|
+72|> ⚠️ **`useEffect` 是最后手段**：仅在“必须注册/注销 reause 未涵盖的外部资源”时使用。
+73|
+74|| 场景 | 推荐 API | 禁用方式 |
+75|| --- | --- | --- |
+76|| 观察值变化 | `useWatch` / `useWhenever` | `useEffect(deps)` |
+77|| 仅 Mount 时执行 | `useMount` | `useEffect(..., [])` |
+78|| Tauri 事件订阅 | `useListen` (含自动注销/防竞态) | `useEffect` + `listen` |
+79|| DOM 事件 | `useEventListener` | `addEventListener` |
+80|| 定时轮询 / 延时 | `useIntervalFn` / `useTimeoutFn` | `setInterval` / `setTimeout` |
+81|| 异步延时 | `promiseTimeout` | `new Promise(r => setTimeout(r, ms))` |
+82|| 深色模式判定 | `usePreferredDark` / `useMediaQuery` | `matchMedia` 手写监听 |
+83|| 开关状态 | `useToggle` | `useState(false)` 手写逻辑 |
+84|| 跨组件事件 | `createEventHook` + `useListener` | 全局 EventBus |
+85|| 设置变更失效查询 | `useInvalidateOnSettingUpdated(key)` | 手写监听 `setting_updated` |
+86|| iframe 消息通信 | `useIframePost` / `useIframeMessage` | 手写 `postMessage` |
+87|
+88|### 3.3 条件渲染规范 (Conditional Rendering)
+89|
+90|禁止使用三元运算符与 `&&`，统一使用 `react-if-lite` 包中的 `<If>`、`<Then>`、`<Else>`。
+91|
+92|```tsx
+93|<If cond={!isLoading} else={<LoadingSpinner />}>
+94|  <Content />
+95|</If>
+96|
+97|<If cond={hasData}>
+98|  <Then><DataTable data={data} /></Then>
+99|  <Else><Empty /></Else>
+100|</If>
+101|
+102|```
+103|
+104|### 3.4 样式与 Variant 设计 (`tv`)
+105|
+106|变体多或包含多 Slot 的组件统一使用 `tailwind-variants (tv)`，并使用主题 Token。
+107|
+108|```tsx
+109|export const cardStyle = tv({
+110|  slots: { base: 'relative p-4', icon: 'size-6 rounded-full' },
+111|  variants: {
+112|    intent: {
+113|      success: { icon: 'bg-success-100 text-success' },
+114|      warning: { icon: 'bg-warning-100 text-warning' },
+115|    },
+116|  },
+117|  defaultVariants: { intent: 'success' },
+118|});
+119|
+120|```
+121|
+122|---
+123|
+124|## 4. 状态与数据流控制 (State & Data Management)
+125|
+[revision=10667a76e6b6ee6837ccaa1b2d2b13db4243f7d4b95e7ce01e1bffb265f53677; more lines; nextOffset=126]
+=== FILE: "E:\\projects\\deepseek-harness-desktop\\src-tauri\\tauri.conf.json" (Lines 1-82 of 82) ===
+1|{
+2|  "$schema": "https://schema.tauri.app/config/2",
+3|  "productName": "DSH Tauri",
+4|  "version": "0.24.5",
+5|  "identifier": "dsh-tauri",
+6|  "build": {
+7|    "beforeDevCommand": "pnpm dev",
+8|    "devUrl": "http://localhost:1420",
+9|    "beforeBuildCommand": "pnpm build",
+10|    "frontendDist": "../dist"
+11|  },
+12|  "app": {
+13|    "macOSPrivateApi": true,
+14|    "security": {
+15|      "assetProtocol": { "enable": true, "scope": [] },
+16|      "csp": "default-src 'self'; connect-src 'self' asset: http://asset.localhost https://asset.localhost ipc: http://ipc.localhost http://127.0.0.1:*; img-src 'self' asset: http://asset.localhost data: blob: https://*.githubusercontent.com; media-src 'self' asset: http://asset.localhost https://asset.localhost data: blob: https://*.githubusercontent.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; frame-src http://127.0.0.1:*",
+17|      "devCsp": "default-src 'self'; connect-src 'self' asset: http://asset.localhost https://asset.localhost ipc: http://ipc.localhost http://localhost:1420 ws://localhost:1421 http://127.0.0.1:*; img-src 'self' asset: http://asset.localhost data: blob: https://*.githubusercontent.com; media-src 'self' asset: http://asset.localhost https://asset.localhost data: blob: https://*.githubusercontent.com; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; frame-src http://127.0.0.1:*"
+18|    }
+19|  },
+20|  "plugins": {
+21|    "deep-link": {
+22|      "desktop": {
+23|        "schemes": ["dsh"]
+24|      }
+25|    },
+26|    "notifications": {
+27|      "windows": {
+28|        "toastActivatorClsid": "4FBB68DF-E119-4FBB-82D5-FA10F85B519B",
+29|        "iconPath": "icons/32x32.png"
+30|      }
+31|    }
+32|  },
+33|  "bundle": {
+34|    "active": true,
+35|    "targets": "all",
+36|    "icon": [
+37|      "icons/32x32.png",
+38|      "icons/128x128.png",
+39|      "icons/128x128@2x.png",
+40|      "icons/icon.icns",
+41|      "icons/icon.ico",
+42|      "icons/icon.png"
+43|    ],
+44|    "resources": ["resources/**/*", "icons/32x32.png"],
+45|    "licenseFile": "licenses/INSTALLER-LICENSE.txt",
+46|    "category": "DeveloperTool",
+47|    "copyright": "Copyright © 2026 Deepseek Harness Desktop contributors",
+48|    "macOS": {
+49|      "minimumSystemVersion": "12.0",
+50|      "hardenedRuntime": true,
+51|      "infoPlist": "Info.plist",
+52|      "entitlements": "Entitlements.plist"
+53|    },
+54|    "linux": {
+55|      "appimage": {
+56|        "bundleMediaFramework": true
+57|      },
+58|      "deb": {
+59|        "depends": ["gstreamer1.0-plugins-good", "gstreamer1.0-plugins-bad"],
+60|        "conflicts": ["deepseek-harness-desktop"],
+61|        "replaces": ["deepseek-harness-desktop"]
+62|      }
+63|    },
+64|    "windows": {
+65|      "nsis": {
+66|        "template": "templates/installer.nsi",
+67|        "languages": ["English", "SimpChinese"],
+68|        "displayLanguageSelector": false,
+69|        "installerIcon": "icons/icon.ico",
+70|        "uninstallerIcon": "icons/icon.ico"
+71|      },
+72|      "wix": {
+73|        "upgradeCode": "d6340322-9fd6-54cd-a64f-28a2ade67a65",
+74|        "language": ["en-US", "zh-CN"],
+75|        "fragmentPaths": ["./windows/fragments/autostart-cleanup.wxs"],
+76|        "componentRefs": ["CleanupLegacyShortcuts"]
+77|      }
+78|    },
+79|    "shortDescription": "Desktop application for DeepSeek Harness",
+80|    "longDescription": "A native desktop application for running DeepSeek Harness (dsh) locally with one-click install and zero configuration."
+81|  }
+82|}
+[revision=34c93976ecdd34c1ea696500d79bad368559d3dd2bba98c5acd53d9b73410d13; end of file; complete=true]
+[Notice: 4/4 requested ranges returned.]
+
+[tool • skill]
+<skill_content name="pnpm">
+<skill_resources>
+Base directory for this skill: C:\Users\hairy\.agents\skills\pnpm
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+pnpm is a fast, disk space efficient package manager. It uses a content-addressable store to deduplicate packages across all projects on a machine, saving significant disk space. pnpm enforces strict dependency resolution by default, preventing phantom dependencies. Configuration should preferably be placed in `pnpm-workspace.yaml` for pnpm-specific settings.
+
+**Important:** When working with pnpm projects, agents should check for `pnpm-workspace.yaml` and `.npmrc` files to understand workspace structure and configuration. Always use `--frozen-lockfile` in CI environments.
+
+> The skill is based on pnpm 10.x, generated at 2026-02-01.
+
+## Core
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Installation | Standalone script, Corepack, npm, system package managers | [core-installation](references/core-installation.md) |
+| CLI Commands | Install, add, remove, update, run, exec, dlx, and workspace commands | [core-cli](references/core-cli.md) |
+| Configuration | pnpm-workspace.yaml, .npmrc settings, and package.json fields | [core-config](references/core-config.md) |
+| Workspaces | Monorepo support with filtering, workspace protocol, and shared lockfile | [core-workspaces](references/core-workspaces.md) |
+| Store | Content-addressable storage, hard links, and disk efficiency | [core-store](references/core-store.md) |
+| Package Sources | npm, JSR, workspace, Git, tarball—trusted and exotic sources | [core-package-sources](references/core-package-sources.md) |
+| Errors | Common error codes and resolutions | [core-errors](references/core-errors.md) |
+
+## Features
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Filtering | Rich selector syntax for --filter (deps, dependents, changed, globs) | [features-filtering](references/features-filtering.md) |
+| Catalogs | Centralized dependency version management for workspaces | [features-catalogs](references/features-catalogs.md) |
+| Overrides | Force specific versions of dependencies including transitive | [features-overrides](references/features-overrides.md) |
+| Patches | Modify third-party packages with custom fixes | [features-patches](references/features-patches.md) |
+| Aliases | Install packages under custom names using npm: protocol | [features-aliases](references/features-aliases.md) |
+| Hooks | Customize resolution with .pnpmfile.cjs hooks | [features-hooks](references/features-hooks.md) |
+| Peer Dependencies | Auto-install, strict mode, and dependency rules | [features-peer-deps](references/features-peer-deps.md) |
+| Config Dependencies | Share hooks, catalogs, patches across projects | [features-config-dependencies](references/features-config-dependencies.md) |
+| Git Branch Lockfiles | Branch-specific lockfiles to avoid merge conflicts | [features-git-branch-lockfiles](references/features-git-branch-lockfiles.md) |
+| Changesets | Monorepo versioning and publishing | [features-changesets](references/features-changesets.md) |
+| Supply Chain Security | allowBuilds, blockExoticSubdeps, trustPolicy | [features-supply-chain-security](references/features-supply-chain-security.md) |
+| Finders | Search dependency graph by package properties (v10.16+) | [features-finders](references/features-finders.md) |
+| Completion | Shell tab completion (Bash, Zsh, Fish) | [features-completion](references/features-completion.md) |
+| Scripts | Lifecycle scripts and pnpm:devPreinstall | [features-scripts](references/features-scripts.md) |
+| Cache | Metadata cache commands (list, view, delete) | [features-cache](references/features-cache.md) |
+| Node.js Env | Manage Node.js versions (pnpm env use/add/remove) | [features-env](references/features-env.md) |
+| Publish & Deploy | publish, pack, deploy, fetch for Docker and registry | [features-publish-deploy](references/features-publish-deploy.md) |
+
+## Best Practices
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| CI/CD Setup | GitHub Actions, GitLab CI, Docker, and caching strategies | [best-practices-ci](references/best-practices-ci.md) |
+| Docker | BuildKit cache, pnpm fetch, pnpm deploy for monorepos | [best-practices-docker](references/best-practices-docker.md) |
+| Production | Lockfile deployment, offline install | [best-practices-production](references/best-practices-production.md) |
+| Only Allow pnpm | Enforce pnpm with preinstall (only-allow) | [best-practices-only-allow-pnpm](references/best-practices-only-allow-pnpm.md) |
+| TypeScript | preserveSymlinks, packageExtensions, @pnpm/plugin-types-fixer | [best-practices-typescript](references/best-practices-typescript.md) |
+| Podman | Btrfs reflinks, store and node_modules volume mounts | [best-practices-podman](references/best-practices-podman.md) |
+| Git | Lockfile commit and merge conflict resolution | [best-practices-git](references/best-practices-git.md) |
+| Migration | Migrating from npm/Yarn, handling phantom deps, monorepo migration | [best-practices-migration](references/best-practices-migration.md) |
+| Performance | Install optimizations, store caching, workspace parallelization | [best-practices-performance](references/best-practices-performance.md) |
+
+## Advanced
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Limitations | npm lockfile ignored, binstubs are shell scripts | [advanced-limitations](references/advanced-limitations.md) |
+</skill_instructions>
+</skill_content>
+
+[tool • skill]
+<skill_content name="vite">
+<skill_resources>
+Base directory for this skill: C:\Users\hairy\.agents\skills\vite
+Resolve relative paths mentioned by this skill against the base directory before using them. Load referenced resources only as needed.
+</skill_resources>
+
+<skill_instructions>
+# Vite
+
+> Based on Vite 8 beta (Rolldown-powered). Vite 8 uses Rolldown bundler and Oxc transformer.
+
+Vite is a next-generation frontend build tool with fast dev server (native ESM + HMR) and optimized production builds.
+
+## Preferences
+
+- Use TypeScript: prefer `vite.config.ts`
+- Always use ESM, avoid CommonJS
+
+## Core
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Configuration | `vite.config.ts`, `defineConfig`, conditional configs, `loadEnv` | [core-config](references/core-config.md) |
+| Features | `import.meta.glob`, asset queries (`?raw`, `?url`), `import.meta.env`, HMR API | [core-features](references/core-features.md) |
+| Plugin API | Vite-specific hooks, virtual modules, plugin ordering | [core-plugin-api](references/core-plugin-api.md) |
+
+## Build & SSR
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Build & SSR | Library mode, SSR middleware mode, `ssrLoadModule`, JavaScript API | [build-and-ssr](references/build-and-ssr.md) |
+
+## Advanced
+
+| Topic | Description | Reference |
+|-------|-------------|-----------|
+| Environment API | Vite 6+ multi-environment support, custom runtimes | [environment-api](references/environment-api.md) |
+| Rolldown Migration | Vite 8 changes: Rolldown bundler, Oxc transformer, config migration | [rolldown-migration](references/rolldown-migration.md) |
+
+## Quick Reference
+
+### CLI Commands
+
+```bash
+vite              # Start dev server
+vite build        # Production build
+vite preview      # Preview production build
+vite build --ssr  # SSR build
+```
+
+### Common Config
+
+```ts
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  plugins: [],
+  resolve: { alias: { '@': '/src' } },
+  server: { port: 3000, proxy: { '/api': 'http://localhost:8080' } },
+  build: { target: 'esnext', outDir: 'dist' },
+})
+```
+
+### Official Plugins
+
+- `@vitejs/plugin-vue` - Vue 3 SFC support
+- `@vitejs/plugin-vue-jsx` - Vue 3 JSX
+- `@vitejs/plugin-react` - React with Oxc/Babel
+- `@vitejs/plugin-react-swc` - React with SWC
+- `@vitejs/plugin-legacy` - Legacy browser support
+</skill_instructions>
+</skill_content>
+
+[tool • ops_bash]
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:16:/// release 正在加载的 Node 原生模块。用户数据目录另由 `get_dsh_data_path` 隔离。
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:549:/// Harness 用户数据目录（$DSH_HOME）。
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:551:/// 与官方 dsh（`${DSH_HOME:-$HOME/.dsh}`）保持一致：
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:552:/// - release 构建使用非空环境变量 `DSH_HOME`，否则默认 `~/.dsh`；
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:554:///   shim 继承的 `DSH_HOME`，避免两个构建误用同一 profile 并发改写；
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:557:pub fn get_dsh_data_path<R: Runtime>(_app_handle: &AppHandle<R>) -> PathBuf {
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:563:        DSH_HOME_DEV_DIR_NAME
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:565:        if let Some(home) = std::env::var_os("DSH_HOME") {
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:570:        DSH_HOME_DIR_NAME
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:694:        // 用户数据所在目录 = $DSH_HOME（release 为官方 ~/.dsh，debug 为独立
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:695:        // ~/.dsh.dev，见 get_dsh_data_path），不再是 AppData
+../deepseek-harness-desktop/src-tauri/src/config/runtime.rs:696:        data_dir: get_dsh_data_path(app).to_string_lossy().into_owned(),
+[stderr]
+rg: ../deepseek-harness-desktop/src-tauri/src/service/data_dir.rs: 系统找不到指定的文件。 (os error 2)
+
+[COMMAND_FAILED; effects: unknown; retry: never] Do not repeat the command. Inspect its effects with a read-only operation first.
+[exit code: 2]
+
+[tool • job_list]
+bash-031aa7965c7c4b9d [bash] completed — pnpm exec remotion render Film out/film.mp4 --log=error > .temp/render-film.log 2>&1; echo "exit $?" >> .temp/render-film.log; pnpm exec remotion render Opening out/opening-sample.mp4 --log=error >> .temp/render-film.log 2>&1; echo "exit $?" >> .temp/render-film.log; rm -f debug.log

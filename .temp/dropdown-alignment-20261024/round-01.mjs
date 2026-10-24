@@ -1,0 +1,11 @@
+const task = await taskSpace('dropdown-alignment-20261024');
+const page = task.page('p1');
+await page.goto('http://localhost:3210/Demo-doc');
+console.log({spaceId:task.spaceId});
+console.log(await page.snapshot());
+const native = await task.newPage();
+await native.goto('http://127.0.0.1:3080');
+console.log({native:native.label});
+console.log(await native.snapshot());
+const fs = await import('node:fs/promises');
+await fs.writeFile('E:/projects/dsh-video/.temp/dropdown-alignment-20261024/browser-state.json',JSON.stringify({spaceId:task.spaceId}));

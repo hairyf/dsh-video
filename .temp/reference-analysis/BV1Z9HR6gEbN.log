@@ -1,0 +1,86 @@
+# BV1Z9HR6gEbN.mp4  360x640  28.8s
+
+## timeline (every 0.5s): motion level / moving regions | palette | new on-screen text
+   0.0s | motion  0.0 -              | black76% black22%                  | text+  2 (max   4%h, -0) 哈基科技 ¦ bilibili
+   0.5s | motion  6.2 TL/T/BL/B      | black84%                           | text+  5 (max   5%h, -0) 路量小剧场·第4集 ¦ 电脑里到底 ¦ 装7n个Aaent?
+   1.0s | motion  4.5 TL/T/L/C/BL/B/BR | black81%                           | text+  6 (max   6%h, -1) 装了几个Agent? ¦ 数数我
+   1.5s | motion  0.6 BL             | black81%                           | text+  6 (max   6%h, -1) 数数我装了几个
+   2.0s | motion  5.2 C/BL/B         | black75% red12%                    | text+  8 (max   5%h, -1) npmi-g ¦ gopensi/codex ¦ 数数我装了几个Agent。
+   2.5s | motion 14.7 TL/T/TR/L/C/BL/B | black77% red15%                    | text+  5 (max   3%h, -6) 路量小剧场04电脑里到庭装了几个Agent? ¦ ClaudeCade ¦ Aider
+   3.0s | motion  2.5 TL/T/TR/BL     | black76% red15%                    | text+  6 (max   3%h, -1) 数到 ¦ ClaudeCode
+   3.5s | motion 10.3 TL/T/TR/L/C/R/BL/B | black75% red15%                    | text+  5 (max   6%h, -3) 路量小剧场04电脑里到底装了几个Agent? ¦ CodexCLI
+   4.0s | motion  8.5 T/TR/C/R/BL/B  | black78% red13%                    | text   5 (max   4%h, -0) 
+   4.5s | motion  3.8 TR/L/C/R/BL/B  | black76% red11%                    | text   5 (max   4%h, -0) 
+   5.0s | motion  1.1 BL             | black77% red12%                    | text+  6 (max   4%h, -2) 路量小剧场04电脑里到庭装了几个Agent? ¦ CodexCu ¦ ，两个Codex？
+   5.5s | motion 10.6 TR/L/C/R/BL/B  | black80% red11%                    | text+  4 (max   4%h, -4) 路量小剧场04电胞里到底装了几个Agent? ¦ OpenCode
+   6.0s | motion  8.4 TR/L/C/BL      | black78% red13%                    | text+  6 (max   4%h, -1) 数到 ¦ Copenai/codex ¦ Aider
+   6.5s | motion  7.7 L/C/BL         | black83% red9%                     | text   5 (max   4%h, -1) 
+   7.0s | motion  2.3 L/BL/B         | black83% red8%                     | text+  5 (max   4%h, -1) 这个
+   7.5s | motion  0.9 BL             | black83% red8%                     | text+  5 (max   4%h, -1) 这个还能用吗？
+   8.0s | motion  6.9 TR/L/C/BL/B    | black80% red11%                    | text+  4 (max   7%h, -2) GeminiCLI
+   8.5s | motion  7.8 TR/C/R/BL/B/BR | black79% red11%                    | text+  7 (max   3%h, -1) instatt ¦ codex ¦ QwenCode ¦ Aider
+   9.0s | motion 10.1 TL/T/TR/L/C/R/BL/B/BR | black76% red15%                    | text+  7 (max   8%h, -3) 数到 ¦ 9? ¦ ClaudeCode
+   9.5s | motion 10.4 TL/T/TR/L/C/R/BL/B | black76% red14%                    | text+  7 (max   8%h, -3) 路量小剧场04电脑里到底装了几个Agent? ¦ CodexCLI ¦ 九个？还
+  10.0s | motion 20.8 T/TR/L/C/R/BL/B/BR | black79% red10%                    | text+  7 (max   8%h, -3) 路量小剧场04电脑里到庭装了几个Agent? ¦ Copenai/codex ¦ 九个？还是八个
+  10.5s | motion  7.1 L/C/BL/B       | black92%                           | text   4 (max   8%h, -3) 
+  11.0s | motion  6.0 C/R/B/BR       | black80% red11%                    | text+  6 (max   4%h, -2) CLI ¦ instau ¦ codex ¦ QwenCod
+  11.5s | motion  2.6 R/B/BR         | black79% red10%                    | text+  8 (max   4%h, -2) odex ¦ brea ¦ install ¦ 别摸黑
+  12.0s | motion  0.7 BR             | black79% red10%                    | text+  8 (max   4%h, -1) 别摸黑了。
+  12.5s | motion 58.8 TL/T/TR/L/C/R/BL/B/BR | orange68% white16% grey9%          | text+ 11 (max   6%h, -6) CodexCLI ¦ Claude Code ¦ npe i-g ¦ popenai/codex ¦ OpenCode ¦ stall ¦ GeminiCLI ¦ boex ¦ Code
+  13.0s | motion 18.8 TL/T/TR/L/C/R/BL/B/BR | red75% white13%                    | text+ 10 (max   6%h, -6) ChatGPT ¦ CLI ¦ Codex ¦ QwenCode ¦ Aid
+  13.5s | motion  8.3 TL/T/TR/L/C/R/BL/BR | red75% white11% red8%              | text+ 11 (max   6%h, -3) Cod ¦ CodexCLI ¦ -/.npasgtoba./b3nycooex ¦ /opt/honetrew/bin/cedex
+  14.0s | motion  5.6 TL/T/TR/L/C/R/BR | red70% pink12% white11%            | text+ 13 (max   6%h, -4) Codex CLI ¦ leot/henebren/ein/codex ¦ -/.npm"globat/bin/codex ¦ /AppLications/ChatepT.apo ¦ ClaudeCor ¦ -/.mpm-gLobau/bin/
+  14.5s | motion  9.0 TL/T/TR/L/C/R/BL/B/BR | red71% white13% red8%              | text+ 14 (max   4%h, -7) 新检测 ¦ -/.npnsgtobat/bin/codex ¦ /opt/nonebrew/bin/codex ¦ /AppLicatioas/ChatGPT.apo ¦ ClaudeCode ¦ -/.np-gtobau/bin/cLawde ¦ /opt/honetrew/bsn/ogencoa
+  15.0s | motion  6.1 L/C/R/BL/B/BR  | red71% white12% red11%             | text+ 16 (max   4%h, -6) -/.npn-gLoba./bin/codex ¦ /Apptications/ChatsPT.app ¦ -/.npn-gLobaL/bin/eLaude ¦ /opt/nonebrew/bin/opencose ¦ -/npll-gLobal/oin/eenins ¦ QwenCode ¦ Ai
+  15.5s | motion  1.3 C              | red71% grey11% white10%            | text+ 19 (max   4%h, -6) 口客提的Agent·玲测到 ¦ 重新检测 ¦ -/.npn-global/bin/codex ¦ -/.npn-gLobal/bin/eLade ¦ /opt/nonebrew/bin/opencode ¦ -/.mpn-gLobal/ain/genis1 ¦ 已失效 ¦ 已失效 ¦ -/.npn-
+  16.0s | motion  1.5 TL/T/BL        | red68% red13% white11%             | text+ 22 (max   4%h, -6) 已安装的Agent·检测到 ¦ 个Agent安装实例 ¦ 1个已失效 ¦ CodexCLI ¦ -/.npn-gLobal/bin/codex ¦ /Applications/ChatePT.app ¦ Claude Code ¦ -/npll-gLobal/oin/eenins ¦ -/.np-g
+  16.5s | motion  2.0 BL             | red68% white14% red11%             | text+ 23 (max   4%h, -3) 可一个Codex·装了两处 ¦ -/.npn-gLoba./bin/codex ¦ 才七个? ¦ Tiweat/binfeider
+  17.0s | motion  1.9 BL/B/BR        | red65% red15% white13%             | text+ 22 (max   4%h, -5) 网一个Codex·装了两处 ¦ -/.npn-gLobal/bin/codex ¦ -/.npn-gLobaL/bin/eLaude ¦ -/.np-global/bin/qwen
+  17.5s | motion  1.7 B/BR           | orange66% white15% grey11%         | text+ 22 (max   4%h, -5) s/.npn-global/bin/codex ¦ /Apptications/ChatePT.app ¦ Claudoboae ¦ /.npl-gLobal/oin/eenins ¦ 有个你数了
+  18.0s | motion  2.6 L/C/BR         | red67% white14% red14%             | text+ 22 (max   4%h, -9) 新检测 ¦ 间一个Codex·装了两处 ¦ -/.npn-gLoba./bin/codex ¦ /AppLications/ChatGPT.app ¦ ClaudeCode ¦ -/.npn-gLobaL/bin/eLavde ¦ -/.mpll-gLobal/Bin/eenins ¦ 有个你数了两
+  18.5s | motion  3.0 L/C/BL/B/BR    | red66% pink12% white11% grey9%     | text+ 20 (max   4%h, -8) -/.npn-global/bin/codex ¦ /Apptications/ChatePT.app ¦ Claude Code ¦ -/.npn-gLobaL/bin/eLaude ¦ /opt/nonebrew/sin/opencose ¦ /.npl-gLobal/oin/eenins
+  19.0s | motion  1.4 BL             | red67% white15% red12%             | text+ 22 (max   4%h, -5) CodexCLI ¦ -/.npn-gLoba./bin/codex ¦ /Appuications/chatePT,app ¦ -/.npn-gLobal/bin/eLade ¦ /opt/nonebrew/bin/opencode ¦ -/.npll-gLobal/oin/eenins ¦ 那以
+  19.5s | motion  0.8 BL             | red66% white16% red12%             | text+ 22 (max   4%h, -1) 那以后新装的呢？
+  20.0s | motion  2.7 C/R/BL/B/BR    | red66% white14% pink11%            | text+ 22 (max   4%h, -9) s/.npn-globau/bin/codex ¦ /opt/honebrew/bin/codex ¦ /Apptications/ChatePT.app ¦ -/.np-gLobaL/bin/eLaude ¦ /opt/nonebrew/bin/opencose ¦ /.npn-gLobal/oi
+  20.5s | motion  0.9 BR             | red68% white13% red12%             | text+ 23 (max   4%h, -8) 【间一个Codex·装了两处 ¦ CodexCLI ¦ -/.npn-gLoba/bin/codex ¦ /opt/nonebrew/bsn/codex ¦ ClaudeCode ¦ /opt/nonebrew/ain/opencose ¦ /.npn-gLobal/nin/eenins ¦ 再开一
+  21.0s | motion 42.0 TL/T/TR/L/C/R/BL/B/BR | black98%                           | text   3 (max   4%h, -20) 
+  21.5s | motion 46.1 TL/T/TR/L/C/R/BL/B/BR | red68% white15% red11%             | text+ 23 (max   4%h, -0) 已安装的Agent·检测到 ¦ 个Agent安装实例 ¦ 重新检测 ¦ 【间一个Codex·装了两处 ¦ CodexCLI ¦ Codex CLI ¦ ChatGPT ¦ s/.npn-global/bin/codex ¦ /opt/nonebrew/bin/codex ¦ /Appuication
+  22.0s | motion  5.4 TL/T/TR/L/C/R/BL/B/BR | red66% white16% red12%             | text+ 23 (max   4%h, -10) 一个Codex·装了两处 ¦ s/.np-gLobaL/bin/codex ¦ /Apstications/ChatGPT.app ¦ ClaudeCode ¦ -/.np-gLobaL/bin/eLaude ¦ /opt/nonebrew/oin/opencose ¦ /.nonl-eLobal/
+  22.5s | motion  5.5 TL/T/TR/L/C/R/BL/BR | red66% white15% red12%             | text+ 25 (max   4%h, -9) 新增1个 ¦ 装了两处 ¦ s/.npn-global/bin/codex ¦ /Appuications/ChatePT,app ¦ Claude Code ¦ /opt/nonebrew/bin/opencose ¦ -/.npn-gLobal/nin/eenins ¦ GooseCLI ¦ /
+  23.0s | motion  0.4 -              | red65% grey15% white12%            | text  25 (max   4%h, -0) 
+  23.5s | motion  1.5 -              | red66% white17% red12%             | text+ 25 (max   4%h, -8) -/.npn-elobat/bin/codex ¦ /Apptications/ChatspT.app ¦ -/.np-gtobat/ain/ctaude ¦ /opt/nonebrew/sin/opencoa ¦ -/.npn-gLobat/nin/eenin ¦ /.npm-gLobal/bin
+  24.0s | motion 26.8 TL/T/TR/L/C/R/BL/B/BR | red81% white11%                    | text+ 12 (max   7%h, -19) 装了啥， ¦ 一眼全清楚。 ¦ CeminiCLI ¦ Qwen Code ¦ GooseCLl ¦ 角色为社区二解形象，与任何模型厂商无官方合作，西面为示意
+  24.5s | motion  0.9 C              | red78% white11%                    | text+ 15 (max   7%h, -2) 重复装的、失效的、藏在哪的，不用再翻目录 ¦ 路墨 Lumoswitch ¦ Codex CL ¦ CeminiCUI ¦ 角色为社区二的形象，与任何模型厂商无官方合作，两面为示意
+  25.0s | motion  0.6 -              | red78% white11%                    | text+ 14 (max   7%h, -4) 路墨Lumoswitch ¦ OeminiCUI ¦ 角色为社区二创形象，与任何模型厂商无官方合作，函面为示意
+  25.5s | motion  0.5 -              | red75% white10% pink8%             | text+ 15 (max   7%h, -2) Agent升级失败了怎么办？ ¦ Goose CLl ¦ 角色为社区二创形象，与任何模型厂商无官方合作，函重为示意
+  26.0s | motion  0.3 -              | red75% white10% pink8%             | text+ 16 (max   7%h, -1) 下集 ¦ 角色为社区二创形象，与任何模型厂商无官方合作，函面为示意
+  26.5s | motion  0.2 -              | red75% white10% pink8%             | text  16 (max   7%h, -0) 
+  27.0s | motion  0.2 -              | red77% white11%                    | text  16 (max   7%h, -0) 
+  27.5s | motion  0.2 -              | red75% white10% pink8%             | text  16 (max   7%h, -0) 
+  28.0s | motion  0.2 -              | red75% white10% pink8%             | text+ 16 (max   7%h, -1) 角色为社区二创形象，与任何模型厂商无官方合作，函重为示意
+  28.5s | motion 11.0 TL/T/TR/L/C/R/BL/B/BR | red79% grey11%                     | text+ 16 (max   7%h, -4) OpenCode ¦ QwenCode ¦ GooseCLl ¦ 角色为社区二创形象，与任何模型厂商无官方合作，需面为示意
+
+## cuts and animation bursts
+  0.33s ANIM 0.67s
+  2.50s CUT (diff 26)
+  2.00s ANIM 0.83s
+  3.17s ANIM 0.33s
+  3.83s ANIM 0.50s
+  5.17s ANIM 0.33s
+  7.83s ANIM 0.67s
+  8.67s ANIM 1.50s
+ 10.33s ANIM 0.33s
+ 10.83s ANIM 0.50s
+ 12.33s CUT (diff 127)
+ 12.50s CUT (diff 43)
+ 12.67s CUT (diff 31)
+ 12.17s ANIM 3.00s
+ 21.00s CUT (diff 121)
+ 21.17s CUT (diff 124)
+ 20.83s ANIM 0.83s
+ 22.00s ANIM 0.33s
+ 23.67s CUT (diff 32)
+ 23.83s CUT (diff 29)
+ 23.50s ANIM 0.67s
+ 28.50s CUT (diff 33)
+ 28.67s CUT (diff 56)

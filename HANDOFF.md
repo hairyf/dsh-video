@@ -1,181 +1,117 @@
 # DSH Tauri 第二期宣传片 · 交接
 
-交接日期：2026-10-23，Asia/Shanghai。仓库：[hairyf/dsh-video](https://github.com/hairyf/dsh-video)，分支 `main`。
+更新：2026-10-24（Asia/Shanghai）。工作目录 `E:/projects/dsh-video`，分支 `main`；本轮改动已提交并推送到现有远端，未发布视频。
 
-## 0. 回家先看这里
+## 当前交付状态
 
-**方案已获用户确认；现在停在“素材与计划已归档”，不是“样片已完成”。** 用户本次要求先提交推送全部任务内容（包括 temp），再写交接文档并再次提交推送，回家继续。本次没有开始生成办公成果、录制或制作样片。
+最新 v11 落实两处交互与片尾改动：安装完成并点击完成后回到主会话；片头“标注修改”停住时显示两处暂存标注、修改摘要与待修改输入框，标注项本身不再加边框。片尾宠物换成 87 帧“跳舞(Helltaker)”循环。其余分镜、七张“编号 · 功能名”中转卡、32% 配乐／1.35 音效增益、连续用户原曲与 43＋4 署名保留：从 React 源界面以两倍像素密度渲染 **3840×2160、30 fps、175 秒、5250 帧**。代码／时间轴检查与最终媒体验证全部通过；v11 成片已导出，待用户审片。内置绘图工具已生成封面，标题及包含相关官方链接的中文简介已整理。八段原片重导了受界面改动影响的 revise，并重新打包 v11 原片包。历史成片保留。
 
-- 下一阶段：按本文制作 **26 秒正式片头样片**，先交样片，不擅自一次做完整片。
-- 完整片目标约 **110 秒**，用户原要求范围 1:30–2:30。
-- 输出规格：**1920×1080，30 fps**；样片 780 帧。正式剪辑点需跟实际音乐校准。
-- 主线：**从一句需求，到可以交付的办公文件**。Office Kit 是主角，全屏侧边栏是重点，Ops 只作短促补充。
-- 已有 Remotion 工程仍是空模板： [Composition.tsx](<src/Composition.tsx>) 的 `MyComponent` 返回 `null`，`MyComp` 仍为 1280×720 / 30 fps / 60 帧。不要把这个空输出当样片。
-- 没有已验证的隔离录制环境；也没有真实安装、五段工作录屏或修改后的办公文件。不要写成“已就绪”。
+- [v11 4K 成片](<out/film-simulated-v11-4k.mp4>)：H.264/yuv420p，AAC 立体声，PNG 无损中间帧、CRF 14、slow；255,052,548 字节，SHA-256 `0dc8b3dc833c32e011911cef5f6466c2ac6027bee840503900d96ae020d80ffa`。
+- [v11 最终检查报告](<out/simulation-verification-v11-4k.json>)：九段完整解码、原曲连续性、立体声峰值／淡出及第 5249 帧全黑检查全部通过。
+- [内置绘图工具生成的封面](<out/dsh-tauri-cover-v1.png>)：1672×941 PNG，1,667,408 字节；SHA-256 `e1cb18b976bf0d41915523a663991a87e100ea9855e12939bae60bf66afad0f5`。没有使用 imagine CLI 生成。
+- [发布标题与中文简介](<out/dsh-tauri-publication.md>)：标题为“【DSH Tauri】更新！Office 套件、优化工具、新宠物！”；简介按第一期风格精简，保留 DSH Tauri 项目、下载、使用文档及两个插件的官方链接。链接核验日期为 2026-10-24；仅准备文案，未发布。
+- [v11 检查帧](<out/simulated-keys-v11-4k/>)：24 张 3840×2160 PNG，覆盖安装回到主会话、片头标注摘要与输入框、片尾舞蹈宠物及七张中转卡。
+- 已验证的 [v9 4K 成片](<out/film-simulated-v9-4k.mp4>)／[报告](<out/simulation-verification-v9-4k.json>) 与 [v10 4K 成片](<out/film-simulated-v10-4k.mp4>)／[报告](<out/simulation-verification-v10-4k.json>) 保留：v9 为 252,381,527 字节，SHA-256 `642c4ae06e796782ff367069fc59b6fb60d999e9cfb2371a0a44f66d2cbccb0e`；v10 为 253,359,009 字节，SHA-256 `c4b4d757dfa58075e8a1e72c1963af0db11f1234566547ffab935521b0dd7c52`。
+- [v11 八段连续模拟原片包](<out/dsh-simulated-originals-v11.zip>)，附 [原片说明](<out/simulated-originals/README.md>)：install 改为完成后回到主会话，revise 保留无边框标注与修改摘要；1400×900、30 fps、连续原速、无音轨，无后期光标、运镜或影片转场。包内恰含说明及八段 MP4，均与本地原片逐字节相同；3,584,000 字节，SHA-256：`3233cc4c297c1bf0bd61732c513c1c26d31f997d11792b69103479221bb7f64f`。
+- [v9 八段原片包](<out/dsh-simulated-originals-v9.zip>) 保留（3,179,162 字节，SHA-256 `c83114d758fe017012878bddf3aa4c62d7fbfa2d9d0ff062c25b7a4c39a6b843`）。
+- 已验证的历史 [v8 4K 成片](<out/film-simulated-v8-4k.mp4>) 与 [v8 检查报告](<out/simulation-verification-v8-4k.json>) 保留。v8 为 275,331,467 字节，SHA-256：`1da7274c1c72204384b7324863bd2ac4d6037ce8f79c3d4b5a5484af442c7f82`。
+- [v7 4K 成片](<out/film-simulated-v7-4k.mp4>)、[v7 检查报告](<out/simulation-verification-v7-4k.json>)、[v6 成片](<out/film-simulated-v6.mp4>) 及 [v6 原片包](<out/dsh-simulated-originals-v6.zip>) 保留；`out/` 被 Git 忽略。
 
-新机器：
+**真实性边界：** 界面、工具执行及文件预览均为确定性脚本化模拟，不是实际模型调用、实际 Office 文件生成或实测性能录像。成片及 MP4 元数据均有说明；没有另外交付对应的 DOCX/PDF/PPTX/XLSX 文件。
+
+## 已落实的审片要求
+
+| 范围 | 实现 |
+|---|---|
+| 主线 | 同一个虚构 LUMA Desk 项目：文档、PDF、6 页演示文稿、预算表、标注修改、双窗预览、Ops |
+| 模型与主题 | 浅色 DeepSeek，左侧会话栏默认收起，只留图标栏；原片画布 1400×900 |
+| 版本与介绍 | 使用 v0.25.0；“新增”替代“第三方”；Office 黄底黑字标签；DSH Ops 和新宠物先介绍再安装；片头为“标注修改／段落吸附 · 区域框选 · 直接发送” |
+| 窗口与文字 | 窗口限定在右侧矩形，左侧说明常驻；只有输入阶段在矩形内部聚焦；所有成果及整个标注段正常尺寸 |
+| 导航栏 | 浅色 Windows 桌面壳、44px 原始比例；导航、内容及光标共同接受内部镜头变换，不越出窗口 |
+| 光标 | 大号白色黑描边，点击缩放、点击后消失；原片默认关闭光标 |
+| 菜单 | “办公”分组；四项使用 Office Kit 原始格式图标；文档／PDF 文档／演示文稿／电子表格，输入和发送后的技能标签均显示中文 |
+| 节奏 | 安装完整 7 秒原速，点完成后回到主会话；功能转场 1.6 秒、覆盖停留 0.4 秒，中转卡显示“编号 · 功能名”；各段先留 1 秒落稳再原速输入；成果约 4–7 秒，PPT 翻页 2 倍速 |
+| 标注 | 41.6 秒源流程：段落吸附、长按拖框、两条暂存、查看摘要、暂存区直接发送，无第二次聊天发送；标注项不加边框，摘要与待修改输入框可见；新版使用暖色极简风格 |
+| 双窗 | 保留原窗口，叠加自带导航栏的独立预览；展开后旧窗口的右侧预览收起、聊天铺满 |
+| 音乐 | 用户上传的 DECISIVE BATTLE 原曲，从头连续播放，不回接、不循环、不变速；从安装起 0.6 秒内由 40% 降至 32%，落版回升至 40% 后淡出；正文 145 秒，随后 30 秒次回予告片尾 |
+| 音效 | 本地 Coopanion/Cortico 合成互动音效，46 个同步提示；从安装起增益提高 35%，更早的宠物提示保持原音量；原始来源及许可资料保留 |
+| 片尾 | 三页中文更新，每页四项；AI／Hairy／赤风RED 署名；43 个非机器人公开账号头像与 4 个匿名署名；跳舞(Helltaker) 87 帧循环，宽波纹缓慢向外扩散，16 秒无缝循环 |
+| Ops | 批量读取项目说明与 CSV、整理交付清单；不含未经核实的性能倍数 |
+
+## 时间轴
+
+正文 4350 帧（145 秒）＋片尾 900 帧（30 秒）。一个功能共用一条连续源时间轴，仅改变播放速度，不换成不连续画面。每段开始的 30 帧为静态落稳，之后源流程从第 0 帧开始。
+
+| 成片帧 | 时间（秒） | 内容 |
+|---|---:|---|
+| 0–367 | 0–12.27 | 黑白文字卡、插件及新宠物介绍 |
+| 368–474 | 12.27–15.83 | 宠物出场与气泡 |
+| 475–690 | 15.83–23.03 | 完整 7 秒原速安装及离场 |
+| 691–1014 | 23.03–33.83 | 五窗成果蒙太奇 |
+| 1015–1481 | 33.83–49.40 | 项目策划书 |
+| 1482–1841 | 49.40–61.40 | PDF 产品资料 |
+| 1842–2268 | 61.40–75.63 | 6 页演示文稿及翻页 |
+| 2269–2610 | 75.63–87.03 | 预算、公式、图表与进度 |
+| 2611–3330 | 87.03–111.03 | 段落／区域标注、暂存区发送、打开新版 |
+| 3331–3480 | 111.03–116.03 | 同位置修改前后对照 |
+| 3481–3726 | 116.03–124.23 | 保留原窗口的独立预览 |
+| 3727–3972 | 124.23–132.43 | Ops 批量读取与交付清单 |
+| 3973–4349 | 132.43–145 | 成果拼贴、落版及淡出 |
+| 4350–4799 | 145–160 | v0.25.0 中文更新，三页各五秒 |
+| 4800–4979 | 160–166 | 制作、研发、宠物及素材署名 |
+| 4980–5249 | 166–175 | 非机器人贡献者头像、匿名署名及淡出 |
+
+## 代码与重渲染
+
+| 文件 | 职责 |
+|---|---|
+| [Film.tsx](<src/Film.tsx>) | 逻辑 1920×1080 分镜、源时间映射、固定窗口、镜头、宠物、音效、音乐、片尾；导出共享片头帧数 |
+| [Simulation.tsx](<src/Simulation.tsx>) | 成片与原片共用的帧驱动 DSH 界面、中文技能菜单、预览、标注和双窗逻辑 |
+| [simulation.css](<src/simulation.css>) | 模拟界面、办公菜单和成果排版 |
+| [office-icons.tsx](<src/office-icons.tsx>) | 本地 Office Kit 四个格式图标及宿主文件图标，原始路径数据与 MIT 许可保留 |
+| [demo-timeline.ts](<src/demo-timeline.ts>) | 八段源时间轴、技能元数据、输入、点击／拖动轨迹、输入镜头和音效提示 |
+| [Composition.tsx](<src/Composition.tsx>) | Film／Opening 逻辑画布及八段 1400×900 原片；Opening 使用共享片头帧数 |
+| [render-sim.mjs](<.temp/render-sim.mjs>) | Remotion API；Film 的 PNG 与成片均传 `scale: 2`，成片 CRF 14、四并发 |
+| [check-demo.mjs](<.temp/check-demo.mjs>) | 八条时间轴、中文标签、安装／转场／成果时长、连续源时间、原曲及片尾断言 |
+| [verify-sim.mjs](<.temp/verify-sim.mjs>) | 4K 成片及八段原片的流信息、全程解码、PCM 连续性、峰值、淡出及黑色末帧 |
+| [素材索引](<.temp/README.md>) | 当前工具、历史参考与私密目录边界 |
+
+从项目根目录运行：
 
 ```bash
-git clone https://github.com/hairyf/dsh-video.git
-cd dsh-video
-pnpm install --frozen-lockfile
-pnpm run lint
-# 需要开始预览时再启动；现在只能看到空模板
-pnpm run dev
+npm run lint
+node .temp/check-demo.mjs
+node material/credits/verify-credits.mjs --decode
+node .temp/render-sim.mjs stills Film Demo-doc Demo-pdf Demo-ppt Demo-xlsx
+node .temp/render-sim.mjs film
+node .temp/render-sim.mjs raw
+node .temp/verify-sim.mjs
+node .temp/check-deliverables-v7-4k.mjs v10
 ```
 
-已有克隆先 `git pull --ff-only`。项目 Node 约束为 `^20.19.0 || ^22.13.0 || >=24`，本机验证使用 Node `25.9.0`、pnpm `12.8.1`。依赖版本以 [package.json](<package.json>) 和 [锁文件](<pnpm-lock.yaml>) 为准。新机器还需自行准备浏览器、真实 DSH 桌面端、模型访问凭据和录制工具；这些没有打包入仓库。
+v10 原片未改，验证时复用 v9 原片包，无须重导或重复打包。若后续修改原片，需重新打包说明及八段 MP4，不能沿用菜单更新前的 v6 包。模式后可指定合成，如 `node .temp/render-sim.mjs raw Demo-fullwindow`。原片关闭光标，检查帧开启光标；成片直接重绘界面，无实时模型或网络请求。
 
-## 1. 归档与当前状态
+Studio 逻辑预览仍为 1920×1080，已有服务使用端口 3210；物理 4K 密度由导出脚本的 `scale: 2` 提供。不要为看到 4K 改动分镜坐标或原片尺寸。
 
-第一笔归档提交：`59438f6503bbd49090195e6600e320a4b7672401`，`chore: archive promo materials, task temp files and local skills`。本交接文档及索引属于随后第二笔提交。
+## 检查状态与后续注意
 
-| 内容 | 状态 / 入口 |
-|---|---|
-| Remotion 工程 | 4.0.538，React 19.2.3，TypeScript 5.9.3；源代码未开始制作宣传片 |
-| BGM | [decisive-battle.m4a](<material/bgm/decisive-battle.m4a>)，110.363968 秒，AAC / 44.1 kHz / 双声道 |
-| Sticker Pet | [素材目录](<material/dsh-pet-sticker/>)，158 个 WebM + 158 个 MOV、预览、配置、来源说明和转换工具 |
-| 项目内原 temp | [第一期抽帧](<.temp/ep1frames/>) 8 张、[文字参考抽帧](<.temp/typo-frames/>) 21 张、[Pet 测试帧](<.temp/pet_test.png>) |
-| 系统 temp 的任务文件 | 已复制到项目 [temp 索引](<.temp/README.md>) 所列目录：三份参考视频、四张检查图、三个历史脚本、FFmpeg 原始 ZIP |
-| 技能 | [.agents/skills](<.agents/skills/>) 和 [.claude/skills](<.claude/skills/>) 均为普通文件快照；后者不再是指向办公室绝对路径的链接 |
-| 实录 / 样片 | **未开始**，没有提交伪造的会话、安装成功页面或成果 |
-| 音乐节拍 / 字体 / 最终配色 | 尚未定帧、选定或完成可读性验收 |
+- v11 ESLint／TypeScript、八段时间轴、安装回到主会话、片头标注摘要与输入框、无边框标注、七张中转卡名称、32% 配乐包络及音效增益断言已通过；原速安装／输入、1.6 秒转场、4–7 秒成果、中文标签、连续源时间及 47 个同步提示断言保留。单一原曲、12 项更新、43 头像＋4 匿名展示、波纹方向／16 秒周期及接缝检查保留；原始快照仍为 45 账号＋5 匿名署名。
+- 前轮浏览器 DOM 检查覆盖固定窗口／常驻字幕、输入聚焦、成果与标注正常尺寸、双窗后旧侧栏收起、暂存区发送及当时头像加载。本轮菜单和节奏有代码／关键帧检查，不把旧浏览器检查说成新版验证。
+- v11 24 张 4K 检查帧已生成；完整成片及八段原片的解码、尺寸／帧数／音轨、原曲连续性、混音峰值／淡出、黑色末帧及原片包复核均通过。16 个无音效采样窗最低相关性为 0.9996982，增益为 0.3189207–0.4009788；仍要求相关性 > 0.98、0.3 < 增益 < 0.6。全片峰值 −0.4663 dBFS，安装后正文 −7.3534 dBFS，片尾 −6.6594 dBFS，满幅样本均为 0。历史报告保留。
+- 本轮使用交付检查器确认 v11 原片包恰含九个条目，说明及八段 MP4 与本地原片逐字节匹配。历史 v9、v6 包保留，v6 SHA-256：`10d282471a062c3474ff3d62bd3b5edff64840d96b13073aac77cfcd57753311`；当前原片已更新，不再用当前目录对比旧包。
+- 图像读取工具在本会话只返回图像元信息，不能宣称目视逐帧验收；技术检查也不等于带声音完整观看。最终节奏和主观音量由用户审片。
+- 文件工具保留 mtime，Remotion 4.0.538 Studio 构建缓存可能复用旧模块；Node 导出 API 已传 `enableCaching: false`。修改源文件后更新实际修改文件的 mtime，确认 Studio 载入新内容；不要清空用户浏览器资料。
+- 原曲连续性检查必须先让解码器从头读入，再输出侧 seek（`-i` 后 `-ss`）；输入侧快速 seek 会造成 MP3 解码器短暂误差，不能据此降低相关性阈值。v10 的音效更响，原 98 秒采样窗包含 98.233333–98.459333 秒的 land 音效；[音效诊断脚本](<.temp/music-sfx-diagnostic-v10.mjs>) 从实际源时间轴及 WAV 时长推导占用，并加两 AAC 块保护。受污染的锚点固定验证最近前后两个干净窗，移动不超过 1 秒，不按相关性挑窗；98 秒两侧为 97.840667 与 98.502 秒。此次只修正验证选窗，无重渲染或音频变更。
+- 本机 FFmpeg／FFprobe 位于 `.temp/tools/ffmpeg-unpacked/ffmpeg-7.1-essentials_build/bin/`；Node 25.5.0，Remotion 4.0.538，React 19.2.3。无新增依赖。
+- 端口：Studio 3210；API 检查帧 3222、原片 3223、成片 3224。不要占用用户其他应用的 3000 端口。
+- 最后视频帧号 5249，不从含 AAC 尾部填充的容器时长倒推末帧。
+- 日常 DSH GUI 不用于录制。早期隔离目录 `.temp/recording-20261024/` 可能含私密配置，不打包、不提交；历史脚本含过期任务空间 ID，不整目录盲跑。
 
-素材 Pet 来自 [hairyf/dsh-pet-sticker](https://github.com/hairyf/dsh-pet-sticker)，固定源提交 `6634e0de9cace37ac6b747a960c833209ad015a3`。按普通文件纳入本仓库，不是 submodule，也不依赖嵌套 Git 仓库才能拉到素材。原始说明保留于 [Pet README](<material/dsh-pet-sticker/README.md>)。
+## 素材与署名
 
-**归档边界：**“所有内容”指本项目及本次视频任务的临时产物，不是整台电脑的 Temp。没有提交 `node_modules`、浏览器用户数据、Cookie、模型密钥、DSH 私密配置、带账户标识的媒体签名 URL 原始输出、无关系统日志或嵌套 Git 历史。FFmpeg ZIP 已包含解压后工具，所以不重复提交两份 EXE。此仓库是公开仓库；素材归档不等于拥有公开发行/商业使用授权。
-
-## 2. 参考片与已完成的检查
-
-1. [第一期 BV1VLJQ6XEZi](https://www.bilibili.com/video/BV1VLJQ6XEZi)：延续蓝紫系辨识度、角色讲解、先总览再展开、左标题右实操、局部放大框与连线、结尾界面集合。不重复做一遍安装教程。
-2. [黑屏文字 BV1dm4y1n78i](https://www.bilibili.com/video/BV1dm4y1n78i)：黑底、粗宋体、横竖混排、巨大字号差、红黄关键词、逐块累积与突然硬切，而不是普通大字淡入。
-3. [BGM BV1R1421v739](https://www.bilibili.com/video/BV1R1421v739)：用户指定 DECISIVE BATTLE（使徒来袭）；围绕音乐组织节奏。EVA 动画画面只用于参考，不放进我们的宣传片。
-
-已做的是**覆盖全时长的定间隔抽帧检查、音频时长和波形检查**，不是带声音连续观看，也不是逐帧审片。已确认方案取代最初不充分的短计划。继续时直接看归档，不要重新做一遍下载与粗抽帧；需要补的是听音、标鼓点、精确剪辑。
-
-[第一期联系表](<.temp/reference-review/episode1.jpg>) 每 5 秒抽帧，[文字参考联系表](<.temp/reference-review/typography.jpg>) 每 2 秒抽帧，[BGM 画面联系表](<.temp/reference-review/bgm-video.jpg>) 每 10 秒抽帧，[波形图](<.temp/reference-review/bgm-waveform.png>) 为整条音轨。联系表无精确时间标签；第一期联系表被缩放为 320×240 单格，**不能据其拉伸比例设计最终画幅**。
-
-## 3. 已确认的 110 秒完整方案
-
-| 时间 | 画面与内容 |
-|---|---|
-| 0–10 秒 | 黑屏大字开场：`DSH TAURI` → `v0.25.0` → `第三方预设插件` → `DSH Office Kit`；“创建 / 预览 / 标注 / 修改”逐块出现，最后“全屏展开”引出转场。关键词红色强调，不把所有字堆在同屏。 |
-| 10–14 秒 | Sticker Pet 居中挥手；两句气泡打字：“我是新角色！”“这期由我继续讲解。”随后角色与气泡一起缩小到左下角。 |
-| 14–26 秒 | 功能快览：真实桌面壳勾选 Office Kit、Ops 并点击安装；五段真实录屏窗口由慢到快进入右侧、错位叠放，分别带出文档、PDF、演示文稿、表格、修改后新版。最后文档聚焦并全屏预览，接正文。 |
-| 26–46 秒 | 文档展示完整流程：输入 `/`、选 documents、填需求、提交；执行过程加速，拿到结果恢复正常速度；打开文档，停留封面、目录或重点页，让人看清成品。 |
-| 46–57 秒 | PDF：保留技能选择与提交，缩短执行过程，展示实际分页、图文排版和预览。 |
-| 57–66 秒 | 演示文稿：使用 presentations，节奏加快，展示封面、内容、图表等实际产出的页面，不长时间停在聊天文字。 |
-| 66–74 秒 | 表格：使用 spreadsheets，展示结果里真实存在的汇总、公式或图表，不靠剪辑补出未生成的功能。 |
-| 74–94 秒 | 标注修改与全屏侧边栏重点段：回到同一文档，标注具体问题 → 提交修改 → 会话结束 → 打开新版 → 同位置前后对照；展示侧边栏进入新窗口的真实操作链。 |
-| 94–103 秒 | DSH Ops：保留实际操作证据，再展示核实后的数字。Pet 候选短句：“少折腾，把时间留给结果。”若数字不能证实，改用真实可证明的操作简化，不编数字。 |
-| 103–110 秒 | 四类成果及修改后文档组成背景，Pet 庆祝，落版 `DSH Tauri × DSH Office Kit`，辅以 Ops、版本号、项目入口。 |
-
-四类成果统一使用虚构的**新品发布项目**：项目策划书 / 对外 PDF 资料 / 发布会演示文稿 / 预算与进度表。第五段在第一份策划书上做标注修改。避免四个无关任务重复“生成文件”。提示词及输入数据还没写，要保留这条主题连贯性。
-
-用户最初文案候选还包括“新增 Sticker 宠物预设”“v0.25.0 震撼发布”“办公套件”“标注修改”“侧边栏新窗口全屏浏览”“第三方 DSH Ops”“70 步骤降至 3”“任务耗时减少 2 倍”“Token 用量减少 27.7x”。它们不是必须全挤进片头；性能数字需核实，不把候选视作已证实结论。
-
-## 4. 下一步只做的 26 秒样片
-
-这是**正式片头前 26 秒**，不是另做一段预告。
-
-| 时间 | 要交出的实际效果 |
-|---|---|
-| 0–3 秒 | 黑屏短暂停顿，`DSH TAURI`、版本号在重拍出现，大小字错位。 |
-| 3–7 秒 | “第三方预设插件”与 `DSH Office Kit` 切换，文字逐块叠加，红色关键词。 |
-| 7–10 秒 | “创建 / 预览 / 标注 / 修改”加速出现，收束到清楚的一次画面切换。 |
-| 10–14 秒 | Pet 居中打招呼，两句打字气泡，再缩小移到左下角。 |
-| 14–17 秒 | 真实桌面壳两个插件勾选 → 安装；只突出动作，不让安装进度占十几秒。 |
-| 17–23 秒 | 五个真实录屏窗口进入间隔逐渐缩短，错位叠放；每个窗口是实际成果而非功能图标。 |
-| 23–26 秒 | 聚焦最前面的文档，展示全屏预览操作；其他窗口退场，镜头停稳，承接正文。 |
-
-验收条件：
-
-- [ ] 26 秒 / 1080p / 30 fps，能从头播放到尾，无缺帧黑块、裁切错误或明显音画失配。
-- [ ] 文字确实跟音乐重拍有冲击力，不只是居中渐显；不可读的快速闪烁不能代替节奏。
-- [ ] Pet 透明边缘正确，居中 → 左下角的缩放移动自然，气泡有足够阅读时间。
-- [ ] 安装、成果、修改后的结果来自真实操作，五窗有层次且主画面可读。
-- [ ] 侧边栏新窗口预览是实际操作证明，不用 UI 贴图假装成功。
-- [ ] 不出现个人账号、API Key、真实客户数据、私密路径或其他会话内容。
-- [ ] 提供样片 MP4、关键帧及简短说明，再请用户审片后继续完整版。
-
-## 5. 视觉 / 音频约束
-
-- 用户原“右边 3/2”已按**右侧约 2/3**解释；正文留外边距，左侧留 Pet、标题与气泡。
-- 只有短暂蒙太奇同时叠多个窗口。正文一次聚焦一个，不让所有窗口抢注意力。
-- 开头硬切和强文字节奏，正文平滑推拉、局部放大；不要全片用同一个缩放动画。
-- Pet 根据内容选动作，不只是循环待机。优先复用 [透明 WebM](<material/dsh-pet-sticker/webm/>)，不用重新生成角色。
-- 默认 **Pet 气泡 + 字幕**，不额外生成配音；用户后续明确要求再加。
-- BGM 约 110.36 秒适合 110 秒完整片，无需为凑两分钟硬循环。样片使用开头相应段落，收尾方式以审片为准。
-- 字体需合法可用、中文完整；大字与 UI 的对比、阅读停留时间要实看。当前没有确定或打包字体。
-- BGM、EVA 参考及角色素材的许可未核验；发布前确认。不要误称它们是原创或已取得商业授权。
-
-## 6. 实录与产品事实（源码已查，运行未验）
-
-办公室产品仓库：`D:/projects/dsh-tauri-desk/deepseek-harness-desktop`；本次核查时 HEAD `6169d3e81fd6fb51243c9f7d5dc7fddf230b248d`，工作区干净。产品仓库独立于视频仓库，回家需要另行取得 [DSH Tauri](https://github.com/dsh-tauri/deepseek-harness-desktop)。下列链接固定到该源码提交，方便换机器追踪；源码事实不等于当前运行窗口验收。
-
-### 安装镜头（视频零）
-
-- 仓库声明版本 `0.25.0`，推荐内核 `0.2.1-rc.2`，最低 `0.1.7-rc.1`；见 [manifest](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src-tauri/resources/manifest.jsonc#L2-L5)。录前核对真实运行版本。
-- Office 预设名 **DSH Office Kit**，ID/npm spec `dsh-office-kit`，来源 [hairyf/dsh-office-kit](https://github.com/hairyf/dsh-office-kit)。
-- Ops 的预设界面名称实际是 **DSH Optimize**，ID/npm spec `dsh-ops`，来源 [T-Auto/dsh-ops](https://github.com/T-Auto/dsh-ops)；产品 README 称 DSH OPS。字幕可介绍 Ops，但别在录屏中伪造界面名称。
-- 两者都是 `recommended: true`、`checked: false`、`version: "latest"`；可称推荐的可选第三方预设，不能称默认已安装。实际安装版本须在录制时记录。见 [预设注册](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src-tauri/resources/manifest.jsonc#L204-L223)。
-- 已有用户入口是“配置 → 插件 → 预设”；见 [入口](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src/ui/config/plugin.tsx#L669-L680)。首次/更新引导也有推荐插件页；勾选并确认后调用真实安装，见 [安装动作](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src/layout/components/setup-preinstall.tsx#L261-L284)。
-- 该镜头是桌面端外壳，不是当前 Harness 网页。要录真实桌面窗口；独立干净配置避免已有安装项影响镜头，不要卸载用户日常环境里的插件来造镜头。
-
-### Office 工作镜头（视频一到五）
-
-- 在**真实隔离 DSH 环境**用浏览器录制真实会话；先建立并验证工作区、会话历史与录制账号/配置的隔离，不复制私人历史。
-- 输入 `/` 后选择 UI 实际存在的 documents / pdf / presentations / spreadsheets 入口。用户最初把 presentations 拼作 persentations，制作时以真实入口为准；本次尚未验证入口显示名。
-- 保留原速完整录屏和原始输出，再剪出提交、执行、成果；等待可加速，但提交与成果展示不能省略。
-- 在第一份文档上标注具体改动，提交后等待真实新版，再做同位置前后对照。
-- 模型、网络、插件依赖、预览/转换组件要在隔离环境实际验证；本机日常环境有插件不代表隔离环境可用。
-
-### 全屏侧边栏与 Pet
-
-- “在新窗口全屏打开”已有实现，属于核心 `dsh-tauri` 插件，不宜只归功于 Better Sidebar。按钮在现有右侧栏全屏按钮左边，读取当前 `sessionId`、收起源窗口右栏，再创建 `presentation=full-sidebar` 新窗口。见 [sidebar-fullwindow.ts](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/packages/dsh-tauri/src/client/register/sidebar-fullwindow.ts#L129-L143)、[原生建窗](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src-tauri/src/desktop/window.rs#L124-L170)。
-- 这里“全屏”指右侧栏占满新窗口的布局，不应未经实录承诺系统/F11 全屏。必须真实桌面录屏证明新窗打开、目标会话正确、源窗状态正常；浏览器画面不能冒充原生窗口已验证。见 [截图验收规范](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/docs/specs/screenshot.md#L7-L18)。
-- Sticker 预设 `Maid DeepSeek Sticker` / `dsh-chan-sticker-pet`，157 个动作 + 一个透明待机，共 158 段；默认 WebM、macOS MOV。本仓库有本地合成素材，但产品预设是远端播放，不代表完全离线。见 [预设](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src-tauri/resources/manifest.jsonc#L294-L309)、[素材加载](https://github.com/dsh-tauri/deepseek-harness-desktop/blob/6169d3e81fd6fb51243c9f7d5dc7fddf230b248d/src/pet/hooks/use-pet-source.ts#L9-L14)。
-
-### Ops 宣传数字
-
-`70 → 3`、耗时“减少 2 倍”、`27.7×` 仍是**待核实文案**。本次产品源码/README 只证实有减少 Token 和耗时的泛述，没有查到这些数字的原始 workload、时间基准、同模型条件或实验记录。
-
-下一步找 Ops 原始 benchmark，确认任务、版本、模型、计量口径和前后数字后才能上片。如果原数据确实是用量比，写“Token 用量降至原来的 1/27.7”；如果时间从 T 变 T/2，写“耗时减半”。不要把不同实验数字拼成同一工作流的结果。26 秒样片不需要这些未核实的数字。
-
-## 7. 工具与已知坑
-
-- 复用现有 Remotion，不另建视频引擎，不增加与当前样片无关的框架。先读 [Remotion skill](<.claude/skills/remotion-best-practices/SKILL.md>) 和对应渲染/媒体指南，再选择项目实际已安装的 API。
-- [浏览器技能](<.claude/skills/ego-browser/SKILL.md>) 已归档；办公室 ego-lite 版本 `0.6.0.16`，旧参考浏览器 taskSpace `4` 已结束。别在新机器复用旧任务 ID、绝对路径或会话。
-- 系统临时目录里的参考已复制，制作不再依赖 `C:/Users/wwu71/AppData/Local/Temp`。旧脚本仅作历史留档，特别是包含清空输出目录的一次性脚本，**不要直接运行**。
-- Remotion 附带的是精简 FFmpeg，历史尝试出现 `Pattern type 'glob' was selected but globbing is not supported by this libavformat build`；完整 FFmpeg 才成功生成联系表。Windows `drawtext` 的盘符与冒号转义也失败过。已有联系表无需重做。
-- [FFmpeg ZIP](<.temp/tools/ffmpeg-7.1-essentials_build.zip>) 是 GyanD 7.1 essentials 原始下载，92,100,272 字节。可解压到 `.temp/tools/ffmpeg-unpacked/`（已忽略），里面有 ffmpeg / ffprobe 及许可资料；macOS/Linux 不运行 Windows EXE，准备对应平台工具。
-- Pet WebM 带 VP9 alpha。读取时不能仅凭 ffprobe 的像素格式断言透明通道不存在；渲染前用正确解码路径实际检查边缘。源素材说明见 [Pet README](<material/dsh-pet-sticker/README.md>)。不要误用普通不透明转码覆盖透明素材。
-- 安装检查发现 [pnpm-workspace.yaml](<pnpm-workspace.yaml>) 的 `esbuild` 原来是占位字符串 `set this to true or false`，pnpm 12 报 `ERR_PNPM_IGNORED_BUILDS`。已改为 `false`，与 [package.json](<package.json>) 现有 `allowScripts.esbuild: false` 一致；没有放开任意依赖安装脚本。
-- 当前素材都在 material / temp，不是已接入 Composition 的视频路径；制作时需接入 Remotion 可访问的资源位置，不要把仅在本机存在的绝对路径写进成片。
-
-## 8. 已运行检查与下一位清单
-
-本机已验证：
-
-- `pnpm install --frozen-lockfile`：成功（已有依赖环境，不等于跨机器全新安装验收）。
-- `pnpm run lint`：成功，包含 ESLint 与 TypeScript；`npm run lint` 也成功。
-- 11 个系统 temp → 项目归档复制全部 `cmp` 一致。
-- Pet WebM / MOV 各 158 个；嵌套素材与技能以普通文件跟踪，没有 Gitlink 或办公室绝对路径 symlink。
-- 归档提交 904 个变更文件；当时全库 916 个跟踪文件；最大文件为上述 FFmpeg ZIP，所有文件低于 100 MiB。
-- 对归档的任务文本、技能和 Pet 文本进行了常见密钥/Cookie/签名 URL 模式检索，未命中。不是通用安全审计保证。
-- 自写变更的 `git diff --cached --check` 通过；完整检查报告第三方技能原文的 Markdown 行尾空格/混合缩进，**保留原文未批量格式化**。不要将全库 diff-check 记为通过。
-- **没有运行样片渲染、实录、Office 输出验收或逐鼓点音画检查。**
-
-接手后按顺序：
-
-1. 拉取本仓库，读本交接和 temp 索引，复核环境与依赖。不要重复已完成的粗调研。
-2. 听指定音轨，标注前 26 秒重拍；确定可用中文字体与大字构图。
-3. 建立隔离的真实 DSH/桌面端录制环境，核验版本、两个插件实际安装版本和全部入口。凭据留在机器本地。
-4. 围绕同一“新品发布项目”写四类需求，完成四份成果和第五段标注修改；录下安装和新窗口操作。先采够样片所需的真实片段。
-5. 用当前工程制作 780 帧片头；Pet 转场、右侧五窗叠放、全屏聚焦全部接到真实素材。
-6. 跑 lint / 类型检查，渲染关键帧与 MP4，检查透明度、字幕可读性、音画节拍和隐私。
-7. 交 26 秒样片供用户确认后再展开完整 110 秒片。未核实数字和版权事项继续保留为发布前门槛。
-
-给下一位代理的启动语：
-
-> 先阅读 HANDOFF.md 和 .temp/README.md。110 秒完整方案和 26 秒样片已获确认，目前只有素材与计划归档，没有录屏或样片。不要重新下载参考、不要把空模板当成果。请从真实隔离录制环境与样片素材采集开始，按交接制作 26 秒正式片头，再请我审片。
+- [用户原曲记录](<material/bgm/user-source.md>)：上传 MP3 144.979592 秒，SHA-256 `8270e5d7c0b6bb9cec5db11d933dc43f29148d761ff77aec3152c867a1738191`，从头连续播放。旧短源及演奏版候选未用于本版。
+- [贡献者与更新来源](<material/credits/SOURCES.md>)：原始 API 快照 44 User＋1 Bot，另 5 个匿名署名，数据及头像全部保留。仅在展示时排除 dosubot[bot]、web-flow 和匿名 dsh-bot，显示 43 公开账号＋4 匿名署名，不把账号数称作自然人数。
+- [Coopanion/Cortico 音效来源](<material/coopanion-sfx/README.md>)：十个合成 WAV；原代码及 AGPL-3.0 许可保留。
+- [Office 菜单图标来源](<material/office-icons/README.md>)：本地 Office Kit 的 Gravity UI 格式图标与 DSH 宿主文件图标；对应 MIT 许可保留。
+- 宠物动作见 [pet 素材](<public/pet/>)，字体见 [fonts](<public/fonts/>)。BGM 与宠物公开发行授权未在本轮核实；素材保留不等于取得发行许可。
+- 没有用户明确要求时，不推送或发布新版本；不把隔离环境与输出目录提交。本轮安装回主会话、片头标注与片尾舞蹈的改动，已按用户明确授权提交并推送到现有远端。
